@@ -8,4 +8,18 @@
         public long? eventEndTime { get; set; }
         public long? eventCloseTime { get; set; }
     }
+
+    /// <summary>
+    /// Enum that contains all the Event IDs
+    /// </summary>
+    public enum EventID
+    {
+        SpecialStage,
+        RaidBoss,
+        CollectObject,
+        Gacha,
+        Advert,
+        Quick,
+        BGM
+    }
 }
