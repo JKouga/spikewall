@@ -22,4 +22,14 @@
         Quick,
         BGM
     }
+
+    public enum EventType
+    {
+        GetAnimals,
+        GetRing,
+        RunDistance,
+        Roulette,
+        Character,
+        Shop
+    }
 }
