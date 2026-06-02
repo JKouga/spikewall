@@ -28,11 +28,12 @@
     /// </summary>
     public enum EventType
     {
-        GetAnimals,
-        GetRing,
-        RunDistance,
-        Roulette,
-        Character,
-        Shop
+        SpecialStage,
+        RaidBoss,
+        CollectObject,
+        Gacha,
+        Advert,
+        Quick,
+        BGM
     }
 }
