@@ -14,7 +14,7 @@
     /// </summary>
     public enum EventID
     {
-        SpecialStage,
+        SpecialStage = 100000000,
         RaidBoss,
         CollectObject,
         Gacha,
