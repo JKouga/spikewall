@@ -36,4 +36,24 @@
         Quick,
         BGM
     }
+
+    /// <summary>
+    /// Enum that contains the Advert Event Types
+    /// </summary>
+    public enum AdvertEventType
+    {
+        Roulette,
+        Character,
+        Shop
+    }
+
+    /// <summary>
+    /// Evnum that contains the Collect Event Types
+    /// </summary>
+    public enum CollectEventType
+    {
+        GetAnimals,
+        GetRings,
+        RunDistance
+    }
 }
