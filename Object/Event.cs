@@ -23,6 +23,9 @@
         BGM
     }
 
+    /// <summary>
+    /// Enum that contains all the Event Types in the game
+    /// </summary>
     public enum EventType
     {
         GetAnimals,
