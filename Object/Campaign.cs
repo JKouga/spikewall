@@ -32,30 +32,5 @@
             ContinueCost,
             PurchaseAddRaidEnergies
         }
-
-        public enum CollectEventType
-        {
-            GetAnimals,
-            GetRing,
-            RunDistance
-        }
-
-        public enum AdvertEventType
-        {
-            Roulette,
-            Character,
-            Shop
-        }
-
-        public enum EventID
-        {
-            SpecialStage,
-            RaidBoss,
-            CollectObject,
-            Gacha,
-            Advert,
-            Quick,
-            BGM
-        }
     }
 }
