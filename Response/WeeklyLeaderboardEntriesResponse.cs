@@ -3,7 +3,8 @@
 namespace spikewall.Response
 {
     /// <summary>
-    /// Response containing cost list (FIXME: Elaborate)
+    /// Response that records any runs into the Runners League in either Endless or Quick Mode; 
+    /// records highest score in one run and total score after a certain number of runs
     /// </summary>
     public class WeeklyLeaderboardEntriesResponse : BaseResponse
     {

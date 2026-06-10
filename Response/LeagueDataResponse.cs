@@ -3,7 +3,7 @@
 namespace spikewall.Response
 {
     /// <summary>
-    /// Response containing roulette information
+    /// Response containing runners league data
     /// </summary>
     public class LeagueDataResponse : BaseResponse
     {

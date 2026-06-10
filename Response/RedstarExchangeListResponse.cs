@@ -1,7 +1,8 @@
 ﻿namespace spikewall.Response
 {
     /// <summary>
-    /// Response containing red star exchange list (FIXME: Elaborate)
+    /// Response containing red star exchange list to trade Red Star Rings for Rings and Revive Tokens
+    /// as well as money to purchase Red Star Rings
     /// </summary>
     public class RedstarExchangeListResponse : BaseResponse
     {
