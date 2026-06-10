@@ -1,5 +1,9 @@
 ﻿namespace spikewall.Object
 {
+    /// <summary>
+    /// Class for Event, an object that contains
+    /// information and settings for given Events, used to setup events to the client.
+    /// </summary>
     public class Event
     {
         public long? eventId { get; set; }

@@ -1,5 +1,9 @@
 ﻿namespace spikewall.Object
 {
+    /// <summary>
+    /// Class for recording scores into the Runners League, used to record
+    /// high score and total score within the League Rank to the client.
+    /// </summary>
     public class LeaderboardEntry
     {
         public string? FriendID { get; set; }
