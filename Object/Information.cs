@@ -25,6 +25,9 @@ namespace spikewall.Object
         // The message that this information contains.
         public string param { get; set; }
 
+        /// <summary>
+        /// enum containing the type of information
+        /// </summary>
         public enum InformationType
         {
             Message,
@@ -46,6 +49,9 @@ namespace spikewall.Object
             CountryImage
         }
 
+        /// <summary>
+        /// enum containing the frequency of displaying information
+        /// </summary>
         public enum DisplayType
         {
             EveryDay,
