@@ -19,27 +19,9 @@
         public ulong? SubCharacterLevel { get; set; }
         public string? MainChaoID { get; set; }
         public ulong? MainChaoLevel { get; set; }
-        //public ulong? Language { get; set; }
+        public ulong? Language { get; set; }
         public ulong? League { get; set; }
         public ulong? MaxScore { get; set; }
         public ulong? TotalScore { get; set; }
-
-        /// <summary>
-        /// This enum contains all the languages that are available in the game.
-        /// </summary>
-        public enum Language
-        {
-            Japanese,
-            English,
-            ChineseZHJ,
-            ChineseZH,
-            Korean,
-            French,
-            German,
-            Spanish,
-            Portuguese,
-            Italian,
-            Russian
-        }
     }
 }
