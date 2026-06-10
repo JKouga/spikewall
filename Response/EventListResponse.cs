@@ -3,7 +3,7 @@
 namespace spikewall.Response
 {
     /// <summary>
-    /// Response containing event list (FIXME: Elaborate)
+    /// Response containing list of events
     /// </summary>
     public class EventListResponse : BaseResponse
     {
