@@ -1,4 +1,5 @@
 ﻿using spikewall.Object;
+
 namespace spikewall.Response
 {
     /// <summary>
