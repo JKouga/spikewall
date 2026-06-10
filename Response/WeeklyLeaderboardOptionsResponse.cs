@@ -1,7 +1,7 @@
 ﻿namespace spikewall.Response
 {
     /// <summary>
-    /// Response containing cost list (FIXME: Elaborate)
+    /// Response that displays the duration of the Runners League time until Runners League Calculations begin
     /// </summary>
     public class WeeklyLeaderboardOptionsResponse : BaseResponse
     {
