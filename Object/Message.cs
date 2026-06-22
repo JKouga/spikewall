@@ -14,4 +14,12 @@
         public MessageItem[]? MessageItem { get; set; }
         public long ExpireTime { get; set; }
     }
+
+    public class OperatorMessage
+    {
+        public string? ID { get; set; }
+        public string? Content { get; set; }
+        public MessageItem[]? MessageItme { get; set; }
+        public long ExpireTime { get; set; }
+    }
 }
