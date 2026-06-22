@@ -54,10 +54,8 @@
         }
     }
 
-    public class MessageItem
+    public class MessageItem : Item
     {
-        public long? ID { get; set; }
-        public long? Amount { get; set; }
         public long? AdditionalInfo1 { get; set; }
         public long? AdditionalInfo2 { get; set; }
     }
