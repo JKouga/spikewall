@@ -11,7 +11,7 @@
         public string? FriendID { get; set; }
         public string? Name { get; set; }
         public string? URL { get; set; }
-        public Item[]? MessageItem { get; set; }
+        public MessageItem[]? MessageItem { get; set; }
         public long ExpireTime { get; set; }
     }
 }
