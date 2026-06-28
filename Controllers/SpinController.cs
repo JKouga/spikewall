@@ -3,6 +3,9 @@ using MySqlConnector;
 using spikewall.Object;
 using spikewall.Request;
 using spikewall.Response;
+using System.Security.Cryptography;
+using static spikewall.Object.Chao;
+using static spikewall.Object.ChaoBase;
 using static spikewall.Object.Item;
 
 namespace spikewall.Controllers
@@ -33,6 +36,12 @@ namespace spikewall.Controllers
             if (populateStatus != SRStatusCode.Ok)
             {
                 return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
+            }
+
+            var populateChaoState = PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
+            if (populateChaoState != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateChaoState));
             }
 
             WheelOptions wheelOptions = new();
@@ -70,12 +79,56 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, populatePlayerStatus));
             }
 
+            var populateChaoState = PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
+            if (populateChaoState != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateChaoState));
+            }
+
             WheelOptions wheelOptions = new();
             wheelOptions.Populate(conn, clientReq.userId);
 
             var wonItemIndex = wheelOptions.itemWon;
             var wonItemID = wheelOptions.items[wonItemIndex];
             var wonItemCount = (ulong)wheelOptions.item[wonItemIndex];
+
+            var chaostatesql = Db.GetCommand("SELECT * FROM `sw_chaostates WHERE user_id = '{0}'", clientReq.userId);
+            var chaostatecommand = new MySqlCommand(chaostatesql, conn);
+            var chaostatereader = chaostatecommand.ExecuteReader();
+
+            var itemchaosql = Db.GetCommand("SELECT * FROM `sw_chao` WHERE on_item_roulette = '{1}'", 1);
+            var chaoCmd = new MySqlCommand(itemchaosql, conn);
+            var chaoRdr = chaoCmd.ExecuteReader();
+            List<Chao> chaoItemRoulettePrizeList;
+            if (chaoRdr.HasRows)
+            {
+                // Convert ChaoState to list so we can append to it
+                chaoItemRoulettePrizeList = new(chaoState);
+
+                // Read row
+                chaoRdr.Read();
+
+                Chao c = new()
+                {
+                    chaoID = Convert.ToString(chaoRdr["id"]),
+                };
+                chaoRdr.Close();
+
+                // Insert our chao into the Prize List
+                chaostatesql = Db.GetCommand(@"INSERT INTO `sw_chaoitemrouletteprizelist` (
+                                              chao_id
+                                          ) VALUES (
+                                              '{0}'
+                                          );", c.chaoID);
+                var insertCmd = new MySqlCommand(chaostatesql, conn);
+                insertCmd.ExecuteNonQuery();
+
+                chaoItemRoulettePrizeList.Add(c);
+
+                // Convert prizeList back to array to return it
+                chaoState = chaoItemRoulettePrizeList.ToArray();
+            }
+
 
             switch (wonItemID)
             {
@@ -112,8 +165,33 @@ namespace spikewall.Controllers
                     playerState.numRings += (ulong)wheelOptions.numJackpotRing;
                     wheelOptions.rouletteRank = 0;
                     break;
-                case 400000: // normal buddy
-                    // FIXME: Stub
+                case (long)ItemID.NormalEgg: // normal buddy
+                    int chaoPrizeWinIndex = RandomNumberGenerator.GetInt32(0, chaoState.Length);
+                    var wonChaoPrize = chaoState[chaoPrizeWinIndex];
+                    for (int i = 0; i < chaoState.Length; i++)
+                    {
+                        if (chaoPrizeWinIndex == i)
+                        {
+                            if (wonChaoPrize.status == (sbyte)Chao.Status.NotOwned)
+                            {
+                                wonChaoPrize.status = (sbyte)Chao.Status.Owned;
+                            }
+                            else if (wonChaoPrize.status == (sbyte)Chao.Status.Owned && wonChaoPrize.level < 10)
+                            {
+                                wonChaoPrize.level += 1;
+                            }
+                            else if (wonChaoPrize.level == 10)
+                            {
+                                wonChaoPrize.status = (sbyte)Chao.Status.MaxLevel;
+                            }
+                            else
+                            {
+                                playerState.chaoEggs += 1;
+                            }
+                        }
+                    }
+                    AddChaoToChaoState(conn, Convert.ToInt32(wonChaoPrize.chaoID), ref chaoState, clientReq.userId, ref chaoPrizeWinIndex);
+                    SaveChaoState(conn, clientReq.userId, chaoState);
                     wheelOptions.numRemainingRoulette++;
                     wheelOptions.rouletteRank = 0;
                     break;
@@ -155,7 +233,7 @@ namespace spikewall.Controllers
             {
                 playerState = playerState,
 
-                // FIXME: Missing ChaoState!!
+                chaoState = chaoState,
 
                 wheelOptions = wheelOptions
             };
