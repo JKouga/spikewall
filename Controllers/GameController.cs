@@ -808,7 +808,6 @@ namespace spikewall.Controllers
             }
             
             WheelOptions wheelOptions = new();
-            ChaoWheelOptions chaoWheelOptions = new();
 
             PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
 
