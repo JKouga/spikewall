@@ -55,6 +55,7 @@ namespace spikewall.Object
                 this.rouletteRank = reader.GetSByte("roulette_rank");
                 this.numRouletteToken = playerState.numRouletteTicket;
                 this.numRemainingRoulette = playerState.numRouletteTicket + reader.GetSByte("num_free_spins");
+                this.numJackpotRing = reader.GetInt64("num_jackpot_ring");
                 this.nextFreeSpin = nextDayStart.ToUnixTimeSeconds();
 
                 // Append free spins if applicable
@@ -62,6 +63,8 @@ namespace spikewall.Object
                 {
                     this.numRemainingRoulette += 3;
                 }
+
+                AdjustJackpotRing(conn, uid, numJackpotRing);
 
                 reader.Close();
             }
@@ -71,10 +74,10 @@ namespace spikewall.Object
                 reader.Close();
 
                 sql = Db.GetCommand(@"INSERT INTO `sw_wheeloptions` (
-                                            user_id, next_free_spin, num_free_spins, item_won, roulette_rank
+                                            user_id, next_free_spin, num_free_spins, item_won, roulette_rank, num_jackpot_ring
                                         ) VALUES (
                                             '{0}', '{1}', '{2}', '{3}', '{4}'
-                                        );", uid, 0, 0, RandomNumberGenerator.GetInt32(8), 0);
+                                        );", uid, 0, 0, RandomNumberGenerator.GetInt32(8), 0, 30_000);
                 var insertCmd = new MySqlCommand(sql, conn);
                 insertCmd.ExecuteNonQuery();
             }
@@ -89,6 +92,12 @@ namespace spikewall.Object
             if (getAdjustedNormalChaoStatus != SRStatusCode.Ok)
             {
                 return getAdjustedNormalChaoStatus;
+            }
+
+            var getAdjustJackpotRingStatus = AdjustJackpotRing(conn, uid, numJackpotRing);
+            if (getAdjustJackpotRingStatus != SRStatusCode.Ok)
+            {
+                return getAdjustJackpotRingStatus;
             }
 
             this.items = items;
@@ -222,6 +231,42 @@ namespace spikewall.Object
             normalChaoWithoutIncreasedOddsRdr.Close();
 
             chaoState = availableChao.ToArray();
+
+            return SRStatusCode.Ok;
+        }
+
+        public static SRStatusCode AdjustJackpotRing(MySqlConnection conn, string uid, long numJackpotRing)
+        {
+            const long jackpotMaxValue = 99_999;
+
+            DateTimeOffset nextDayStart = new DateTime(
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                0, 0, 0, 0).AddDays(1);
+
+            DateTime currentDay = DateTime.Now;
+            Random random = new Random();
+
+            if (numJackpotRing >= jackpotMaxValue)
+            {
+                numJackpotRing = jackpotMaxValue;
+            }
+            else if (currentDay == nextDayStart)
+            {
+                numJackpotRing += random.Next(1000, 9999);
+            }
+
+            var sql = Db.GetCommand("SELECT * FROM `sw_wheeloptions` WHERE user_id = '{0}'", uid);
+            var command = new MySqlCommand(sql, conn);
+            var reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                WheelOptions wheelOptions = new();
+                wheelOptions.numJackpotRing = numJackpotRing;
+            }
+            reader.Close();
 
             return SRStatusCode.Ok;
         }
