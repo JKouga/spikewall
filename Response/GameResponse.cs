@@ -88,4 +88,10 @@ namespace spikewall.Response
         public Item[]? eventIncentiveList { get; set; }
         public WheelOptions? wheelOptions { get; set; }
     }
+
+    public class PostGameResultsEventResponse : QuickPostGameResultsResponse
+    {
+        public EventState EventState { get; set; }
+        public Item[] EventIncentiveList { get; set; }
+    }
 }
