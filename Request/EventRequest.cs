@@ -31,7 +31,7 @@ namespace spikewall.Request
         public long RedRings { get; set; }
         public long Distance { get; set; }
         public long DailyChallengeValue { get; set; }
-        public long DailyChallengeComplete  { get; set; }
+        public long DailyChallengeComplete { get; set; }
         public long Animals { get; set; }
         public long MaxCombo { get; set; }
         public long Closed { get; set; }

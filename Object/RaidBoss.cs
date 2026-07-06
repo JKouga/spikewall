@@ -35,6 +35,17 @@
         public long ParticipateCount { get; set; }
     }
 
+    public class EventUserRaidBossState
+    {
+        public long NumRaidBossRings { get; set; }
+        public long RaidBossEnergy { get; set; }
+        public long RaidBossEnergyBuy { get; set; }
+        public long NumBeatedEncounter { get; set; }
+        public long NumBeatedEnterprise { get; set; }
+        public long NumRaidBossEncountered { get; set; }
+        public long EnergyRenewsAt { get; set; }
+    }
+
     public class RaidBossPrize
     {
         public Item ItemID { get; set; }
