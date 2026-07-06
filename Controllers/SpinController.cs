@@ -166,6 +166,12 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
 
+            var getJackpotRingStatus = WheelOptions.AdjustJackpotRing(conn, clientReq.userId, wheelOptions.numJackpotRing);
+            if (getJackpotRingStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
+            }
+
             wheelOptions.items = items;
             wheelOptions.item = itemNum;
             wheelOptions.itemWeight = itemWeight;
