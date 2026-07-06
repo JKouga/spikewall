@@ -13,11 +13,11 @@ builder.Services.AddHttpLogging();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Green, Console.BackgroundColor, $"spikewall - process started at " + DateTime.Now + "\n"));
 DebugHelper.ColorfulWrite(new ColorfulString(ConsoleColor.Red, Console.BackgroundColor, "This is experimental software. Normal operation is not guaranteed. Do not use with real databases until the software is stable.\n\n"));
