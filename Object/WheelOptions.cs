@@ -103,7 +103,7 @@ namespace spikewall.Object
             this.items = items;
             this.item = itemNum;
             this.itemWeight = itemWeight;
-            this.numJackpotRing = reader.GetInt64("num_jackpot_ring");
+            this.numJackpotRing = numJackpotRing;
 
             return SRStatusCode.Ok;
         }
@@ -248,13 +248,13 @@ namespace spikewall.Object
             DateTime currentDay = DateTime.Now;
             Random random = new Random();
 
+            if (currentDay == nextDayStart)
+            {
+                numJackpotRing += random.Next(1000, 9999);
+            }
             if (numJackpotRing >= jackpotMaxValue)
             {
                 numJackpotRing = jackpotMaxValue;
-            }
-            else if (currentDay == nextDayStart)
-            {
-                numJackpotRing += random.Next(1000, 9999);
             }
 
             var sql = Db.GetCommand("SELECT * FROM `sw_wheeloptions` WHERE user_id = '{0}'", uid);
@@ -265,6 +265,9 @@ namespace spikewall.Object
             {
                 WheelOptions wheelOptions = new();
                 wheelOptions.numJackpotRing = numJackpotRing;
+                sql = Db.GetCommand(@"UPDATE `sw_wheeloptions` SET num_jackpot_ring = {0} WHERE user_id = {1};", wheelOptions.numJackpotRing, uid);
+                var insertCmd = new MySqlCommand(sql, conn);
+                insertCmd.ExecuteNonQuery();
             }
             reader.Close();
 
