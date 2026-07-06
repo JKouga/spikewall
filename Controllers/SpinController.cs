@@ -87,6 +87,7 @@ namespace spikewall.Controllers
 
             WheelOptions wheelOptions = new();
             wheelOptions.Populate(conn, clientReq.userId, ref chaoState);
+            WheelOptions.AdjustJackpotRing(conn, clientReq.userId, wheelOptions.numJackpotRing);
 
             var wonItemIndex = wheelOptions.itemWon;
             var wonItemID = wheelOptions.items[wonItemIndex];
@@ -125,6 +126,7 @@ namespace spikewall.Controllers
                     break;
                 case (long)ItemID.ItemRouletteRankUp: // JACKPOT
                     playerState.numRings += (ulong)wheelOptions.numJackpotRing;
+                    wheelOptions.numJackpotRing = 30_000;
                     wheelOptions.rouletteRank = 0;
                     break;
                 case (long)ItemID.NormalEgg: // normal buddy
@@ -161,6 +163,12 @@ namespace spikewall.Controllers
             // doesn't become desynced from the roulette rank
             var getWheelOptionsStatus = WheelOptions.GetItemWheelOptions(conn, wheelOptions.rouletteRank, out long[] items, out long[] itemNum, out short[] itemWeight);
             if (getWheelOptionsStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
+            }
+
+            var getJackpotRingStatus = WheelOptions.AdjustJackpotRing(conn, clientReq.userId, wheelOptions.numJackpotRing);
+            if (getJackpotRingStatus != SRStatusCode.Ok)
             {
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
