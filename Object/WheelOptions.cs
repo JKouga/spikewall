@@ -94,7 +94,7 @@ namespace spikewall.Object
             this.items = items;
             this.item = itemNum;
             this.itemWeight = itemWeight;
-            this.numJackpotRing = 50000; // FIXME: Hardcoded!!
+            this.numJackpotRing = reader.GetInt64("num_jackpot_ring");
 
             return SRStatusCode.Ok;
         }

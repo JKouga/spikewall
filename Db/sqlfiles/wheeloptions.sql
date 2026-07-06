@@ -6,5 +6,6 @@ CREATE TABLE
         next_free_spin BIGINT NOT NULL DEFAULT 0,
         num_free_spins TINYINT NOT NULL DEFAULT 3,
         item_won INTEGER NOT NULL,
-        roulette_rank TINYINT NOT NULL DEFAULT 0
+        roulette_rank TINYINT NOT NULL DEFAULT 0,
+        num_jackpot_ring BIGINT NOT NULL DEFAULT 30000
     );
