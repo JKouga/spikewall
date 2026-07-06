@@ -33,6 +33,16 @@
         public string EncounterName { get; set; }
         public long EncounterFlg { get; set; }
         public long ParticipateCount { get; set; }
+
+        /// <summary>
+        /// This enum contains the different rarities of raid bosses.
+        /// </summary>
+        public enum RaidBossRarity
+        {
+            Normal,
+            Rare,
+            SuperRare
+        }
     }
 
     public class EventUserRaidBossState
