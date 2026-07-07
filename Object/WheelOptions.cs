@@ -1,6 +1,7 @@
 ﻿using MySqlConnector;
 using spikewall.Response;
 using System.Security.Cryptography;
+using static spikewall.Object.Item;
 
 namespace spikewall.Object
 {
@@ -55,7 +56,6 @@ namespace spikewall.Object
                 this.rouletteRank = reader.GetSByte("roulette_rank");
                 this.numRouletteToken = playerState.numRouletteTicket;
                 this.numRemainingRoulette = playerState.numRouletteTicket + reader.GetSByte("num_free_spins");
-                this.numJackpotRing = reader.GetInt64("num_jackpot_ring");
                 this.nextFreeSpin = nextDayStart.ToUnixTimeSeconds();
 
                 // Append free spins if applicable
@@ -63,8 +63,6 @@ namespace spikewall.Object
                 {
                     this.numRemainingRoulette += 3;
                 }
-
-                AdjustJackpotRing(conn, uid, numJackpotRing);
 
                 reader.Close();
             }
@@ -74,10 +72,10 @@ namespace spikewall.Object
                 reader.Close();
 
                 sql = Db.GetCommand(@"INSERT INTO `sw_wheeloptions` (
-                                            user_id, next_free_spin, num_free_spins, item_won, roulette_rank, num_jackpot_ring
+                                            user_id, next_free_spin, num_free_spins, item_won, roulette_rank
                                         ) VALUES (
                                             '{0}', '{1}', '{2}', '{3}', '{4}'
-                                        );", uid, 0, 0, RandomNumberGenerator.GetInt32(8), 0, 30_000);
+                                        );", uid, 0, 0, RandomNumberGenerator.GetInt32(8), 0);
                 var insertCmd = new MySqlCommand(sql, conn);
                 insertCmd.ExecuteNonQuery();
             }
@@ -94,7 +92,7 @@ namespace spikewall.Object
                 return getAdjustedNormalChaoStatus;
             }
 
-            var getAdjustJackpotRingStatus = AdjustJackpotRing(conn, uid, numJackpotRing);
+            var getAdjustJackpotRingStatus = AdjustJackpotRing(conn, uid, out long numJackpotRing);
             if (getAdjustJackpotRingStatus != SRStatusCode.Ok)
             {
                 return getAdjustJackpotRingStatus;
@@ -235,7 +233,7 @@ namespace spikewall.Object
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode AdjustJackpotRing(MySqlConnection conn, string uid, long numJackpotRing)
+        public static SRStatusCode AdjustJackpotRing(MySqlConnection conn, string uid, out long numJackpotRing)
         {
             const long jackpotMaxValue = 99_999;
 
@@ -248,28 +246,32 @@ namespace spikewall.Object
             DateTime currentDay = DateTime.Now;
             Random random = new Random();
 
-            if (currentDay == nextDayStart)
-            {
-                numJackpotRing += random.Next(1000, 9999);
-            }
-            if (numJackpotRing >= jackpotMaxValue)
-            {
-                numJackpotRing = jackpotMaxValue;
-            }
-
             var sql = Db.GetCommand("SELECT * FROM `sw_wheeloptions` WHERE user_id = '{0}'", uid);
             var command = new MySqlCommand(sql, conn);
             var reader = command.ExecuteReader();
 
+            WheelOptions wheelOptions = new();
+
             if (reader.Read())
             {
-                WheelOptions wheelOptions = new();
-                wheelOptions.numJackpotRing = numJackpotRing;
-                sql = Db.GetCommand(@"UPDATE `sw_wheeloptions` SET num_jackpot_ring = {0} WHERE user_id = {1};", wheelOptions.numJackpotRing, uid);
-                var insertCmd = new MySqlCommand(sql, conn);
-                insertCmd.ExecuteNonQuery();
+                wheelOptions.numJackpotRing = reader.GetInt64("num_jackpot_ring");
             }
             reader.Close();
+
+            if (currentDay == nextDayStart)
+            {
+                wheelOptions.numJackpotRing += random.Next(1000, 9999);
+            }
+            if (wheelOptions.numJackpotRing >= jackpotMaxValue)
+            {
+                wheelOptions.numJackpotRing = jackpotMaxValue;
+            }
+
+            numJackpotRing = wheelOptions.numJackpotRing;
+
+            var jackpotSql = Db.GetCommand(@"UPDATE `sw_wheeloptions SET num_jackpot_ring = {0} WHERE user_id = {1}", numJackpotRing, uid);
+            var updateJackpotCmd = new MySqlCommand(jackpotSql, conn);
+            updateJackpotCmd.ExecuteNonQuery();
 
             return SRStatusCode.Ok;
         }
