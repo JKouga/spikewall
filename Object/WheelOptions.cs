@@ -246,17 +246,17 @@ namespace spikewall.Object
             DateTime currentDay = DateTime.Now;
             Random random = new Random();
 
-            var sql = Db.GetCommand("SELECT * FROM `sw_wheeloptions` WHERE user_id = '{0}'", uid);
-            var command = new MySqlCommand(sql, conn);
-            var reader = command.ExecuteReader();
+            var getJackpotSql = Db.GetCommand("SELECT * FROM `sw_wheeloptions` WHERE user_id = '{0}'", uid);
+            var getJackpotCommand = new MySqlCommand(getJackpotSql, conn);
+            var getJackpotReader = getJackpotCommand.ExecuteReader();
 
             WheelOptions wheelOptions = new();
 
-            if (reader.Read())
+            if (getJackpotReader.Read())
             {
-                wheelOptions.numJackpotRing = reader.GetInt64("num_jackpot_ring");
+                wheelOptions.numJackpotRing = getJackpotReader.GetInt64("num_jackpot_ring");
             }
-            reader.Close();
+            getJackpotReader.Close();
 
             if (currentDay == nextDayStart)
             {
