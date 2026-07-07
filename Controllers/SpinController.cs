@@ -166,7 +166,7 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
 
-            var getJackpotRingStatus = WheelOptions.AdjustJackpotRing(conn, clientReq.userId, wheelOptions.numJackpotRing);
+            var getJackpotRingStatus = WheelOptions.AdjustJackpotRing(conn, clientReq.userId, out long numJackpotRing);
             if (getJackpotRingStatus != SRStatusCode.Ok)
             {
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
@@ -175,6 +175,7 @@ namespace spikewall.Controllers
             wheelOptions.items = items;
             wheelOptions.item = itemNum;
             wheelOptions.itemWeight = itemWeight;
+            wheelOptions.numJackpotRing = numJackpotRing;
 
             var savePlayerStatus = playerState.Save(conn, clientReq.userId);
             if (savePlayerStatus != SRStatusCode.Ok)
