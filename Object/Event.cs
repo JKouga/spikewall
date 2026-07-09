@@ -63,10 +63,10 @@
 
     public class EventPrize
     {
-        public long RewardId { get; set; }
-        public long Param { get; set; }
         public Item ItemID { get; set; }
         public long NumItem { get; set; }
+        public long RewardID { get; set; }
+        public long Param { get; set; }
     }
 
     public class EventState
