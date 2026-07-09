@@ -7,10 +7,8 @@
         public string? numUp { get; set; }
         public string? numDown { get; set; }
         public string? numGroupMember { get; set; }
-
-        // FIXME: This is an array but shouldn't actually be strings, set up "Cost" object
-        public string[]? highScoreOpe { get; set; }
-        public string[]? totalScoreOpe { get; set; }
+        public OperatorScore[]? highScoreOpe { get; set; }
+        public OperatorScore[]? totalScoreOpe { get; set; }
 
         /// <summary>
         /// Enum that contains the names 
@@ -59,8 +57,8 @@
             numUp = "40";
             numDown = "0";
             numGroupMember = "0";
-            highScoreOpe = Array.Empty<string>();
-            totalScoreOpe = Array.Empty<string>();
+            highScoreOpe = Array.Empty<OperatorScore>();
+            totalScoreOpe = Array.Empty<OperatorScore>();
         }
     }
 }
