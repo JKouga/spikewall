@@ -59,6 +59,22 @@
         }
     }
 
+    public class ConsumedItem : Item
+    {
+        public long? consumedItemId { get; set; }
+    }
+
+    public class CostItem : Item
+    {
+        public long ItemStock { get; set; }
+    }
+
+    public class GiftBoxItem : Item
+    {
+        public long? AdditionalInfo1 { get; set; }
+        public long? AdditionalInfo2 { get; set; }
+    }
+
     public class MessageItem : Item
     {
         public long? AdditionalInfo1 { get; set; }
