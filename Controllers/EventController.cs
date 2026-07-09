@@ -29,5 +29,26 @@ namespace spikewall.Controllers
 
             return new JsonResult(EncryptedResponse.Generate(iv, new EventListResponse()));
         }
+
+        [HttpPost]
+        [Route("getEventState")]
+        [Produces("text/json")]
+        public JsonResult GetEventState([FromForm] string param, [FromForm] string secure, [FromForm] string key = "")
+        {
+            var iv = (string)Config.Get("encryption_iv");
+
+            using var conn = Db.Get();
+            conn.Open();
+
+            var clientReq = new ClientRequest<BaseRequest>(conn, param, secure, key);
+            if (clientReq.error != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
+            }
+
+            // FIXME: Stub
+
+            return new JsonResult(EncryptedResponse.Generate(iv, new EventStateResponse()));
+        }
     }
 }
