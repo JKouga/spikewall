@@ -1,4 +1,6 @@
-﻿namespace spikewall.Response
+﻿using spikewall.Object;
+
+namespace spikewall.Response
 {
     /// <summary>
     /// Response containing red star exchange list to trade Red Star Rings for Rings and Revive Tokens
@@ -6,15 +8,14 @@
     /// </summary>
     public class RedstarExchangeListResponse : BaseResponse
     {
-        // FIXME: Messages shouldn't actually be strings, set up "StoreItem" object
-        public string[]? itemList { get; set; }
+        public StoreItem[]? itemList { get; set; }
         public long? totalItems { get; set; }
         public long? monthPurchase { get; set; }
         public string? birthday { get; set; }
 
         public RedstarExchangeListResponse()
         {
-            itemList = Array.Empty<string>();
+            itemList = Array.Empty<StoreItem>();
             totalItems = 0;
             monthPurchase = 0;
             birthday = "1900-1-1";
