@@ -65,8 +65,8 @@ CREATE TABLE
         ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
         group_id BIGINT UNSIGNED NOT NULL,
         group_member TINYINT UNSIGNED NOT NULL DEFAULT 0,
-        highscore_rank BIGINT UNSIGNED NOT NULL,
-        totalscore_rank BIGINT UNSIGNED NOT NULL,
+        highscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        totalscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
         high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
         total_score BIGINT UNSIGNED NOT NULL DEFAULT 0
     );
@@ -78,8 +78,8 @@ CREATE TABLE
         ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 1,
         group_id BIGINT UNSIGNED NOT NULL,
         group_member TINYINT UNSIGNED NOT NULL DEFAULT 0,
-        highscore_rank BIGINT UNSIGNED NOT NULL,
-        totalscore_rank BIGINT UNSIGNED NOT NULL,
+        highscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        totalscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
         high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
         total_score BIGINT UNSIGNED NOT NULL DEFAULT 0
     );
