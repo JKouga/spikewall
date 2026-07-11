@@ -5,10 +5,10 @@ namespace spikewall.Object
     public class OperatorScore
     {
         public ulong Operator { get; set; }
-        public ulong Number { get; set; } //This is the placement of the League within your group
-        public Item[] PresentList { get; set; } //This is the prize you get based on the number you are within your group
+        public ulong Number { get; set; } //This is the placement of the League within your group; for Daily Battles, it's based on your win streak
+        public Item[] PresentList { get; set; } //This is the prize you get based on the number you are within your group; for Daily Battles, it's based on your win streak
 
-        public static void GenerateEndlessOperatorScores(MySqlConnection conn)
+        public static void GenerateEndlessOperatorPrizes(MySqlConnection conn)
         {
             var generateOperatorPrizesSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguehighscoreprizes` WHERE league_id = '0'");
             var generateOperatorPrizesCmd = new MySqlCommand(generateOperatorPrizesSql, conn);
@@ -20,7 +20,7 @@ namespace spikewall.Object
             }
             generateOperatorPrizesRdr.Close();
         }
-        public static void GenerateQuickOperatorScores(MySqlConnection conn)
+        public static void GenerateQuickOperatorPrizes(MySqlConnection conn)
         {
             var generateOperatorPrizesSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguehighscoreprizes` WHERE league_id = '0'");
             var generateOperatorPrizesCmd = new MySqlCommand(generateOperatorPrizesSql, conn);
