@@ -1,4 +1,6 @@
-﻿namespace spikewall.Object
+﻿using MySqlConnector;
+
+namespace spikewall.Object
 {
     public class LeagueData
     {
@@ -48,6 +50,24 @@
         {
             Endless,
             Quick
+        }
+
+        public static LeagueData GenerateLeagueData(MySqlConnection conn, LeagueID leagueID)
+        {
+            var generateLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_leagueoptions` WHERE id = '{0}'", leagueID);
+            var generateLeagueDataCmd = new MySqlCommand(generateLeagueDataSql, conn);
+            var generateLeagueDataReader = generateLeagueDataCmd.ExecuteReader();
+
+            generateLeagueDataReader.Read();
+            LeagueData leagueData = new()
+            {
+                leagueId = Convert.ToString(generateLeagueDataReader["id"]),
+                numUp = Convert.ToString(generateLeagueDataReader["num_up"]),
+                numDown = Convert.ToString(generateLeagueDataReader["num_down"])
+            };
+            generateLeagueDataReader.Close();
+
+            return leagueData;
         }
 
         public LeagueData()
