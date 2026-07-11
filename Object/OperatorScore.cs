@@ -5,8 +5,8 @@ namespace spikewall.Object
     public class OperatorScore
     {
         public ulong Operator { get; set; }
-        public ulong Number { get; set; }
-        public Item[] PresentList { get; set; }
+        public ulong Number { get; set; } //This is the placement of the League within your group
+        public Item[] PresentList { get; set; } //This is the prize you get based on the number you are within your group
 
         public static void GenerateEndlessOperatorScores(MySqlConnection conn)
         {
@@ -18,6 +18,7 @@ namespace spikewall.Object
             {
                 //Placeholder
             }
+            generateOperatorPrizesRdr.Close();
         }
         public static void GenerateQuickOperatorScores(MySqlConnection conn)
         {
@@ -29,6 +30,7 @@ namespace spikewall.Object
             {
                 //Placeholder
             }
+            generateOperatorPrizesRdr.Close();
         }
     }
 }
