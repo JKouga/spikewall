@@ -4,7 +4,7 @@ namespace spikewall.Object
 {
     public class OperatorScore
     {
-        public ulong Operator { get; set; }
+        public ulong Operator { get; set; } //In the server, this will tell whether the prizes are in range (2) or just singluar (0)
         public ulong Number { get; set; } //This is the placement of the League within your group; for Daily Battles, it's based on your win streak
         public Item[] PresentList { get; set; } //This is the prize you get based on the number you are within your group; for Daily Battles, it's based on your win streak
 
