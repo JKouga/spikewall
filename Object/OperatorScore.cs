@@ -164,6 +164,7 @@ namespace spikewall.Object
                 };
 
                 itemPrizeList.Add(item1);
+
                 if(Convert.ToInt32(generateDailyBattlePrizesRdr["item2"]) != null)
                 {
                     Item item2 = new()
@@ -173,6 +174,7 @@ namespace spikewall.Object
                     };
                     itemPrizeList.Add(item2);
                 }
+
                 OperatorScore operatorScore = new()
                 {
                     Operator = Convert.ToUInt64(generateDailyBattlePrizesRdr["operator"]),
