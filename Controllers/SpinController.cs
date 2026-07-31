@@ -125,7 +125,7 @@ namespace spikewall.Controllers
                     break;
                 case (long)ItemID.ItemRouletteRankUp: // JACKPOT
                     playerState.numRings += (ulong)wheelOptions.numJackpotRing;
-                    wheelOptions.numJackpotRing = 30_000;
+                    wheelOptions.numJackpotRing = 50_000;
                     wheelOptions.rouletteRank = 0;
                     break;
                 case (long)ItemID.NormalEgg: // normal buddy
@@ -166,16 +166,9 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
 
-            var getJackpotRingStatus = WheelOptions.AdjustJackpotRing(conn, clientReq.userId, out long numJackpotRing);
-            if (getJackpotRingStatus != SRStatusCode.Ok)
-            {
-                return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
-            }
-
             wheelOptions.items = items;
             wheelOptions.item = itemNum;
             wheelOptions.itemWeight = itemWeight;
-            wheelOptions.numJackpotRing = numJackpotRing;
 
             var savePlayerStatus = playerState.Save(conn, clientReq.userId);
             if (savePlayerStatus != SRStatusCode.Ok)

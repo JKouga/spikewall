@@ -468,8 +468,11 @@ namespace spikewall.Controllers
                 // Character experience is based on how many rings were collected in the entire run
                 //var exp = request.numRings + request.numFailureRings;
 
-                // In the original game, character experience is based on 
+                // In the original game, character experience is based on the final score divided by 5,000
                 var exp = request.score / 5000;
+
+                //The total final score divided by a number will add to the current Jackpot value
+                var addJackpotRing = request.score / 25000;
 
                 sbyte charactersInRun = 1;
 
@@ -520,6 +523,9 @@ namespace spikewall.Controllers
 
                 quickPostGameResultsResponse.playerState = playerState;
                 quickPostGameResultsResponse.playCharacterState = playCharacterState;
+
+                WheelOptions wheelOptions = new();
+                wheelOptions.numJackpotRing += (long)addJackpotRing;
             }
 
             // FIXME: Actually implement this normally lmao
@@ -558,6 +564,8 @@ namespace spikewall.Controllers
             PostGameResultsResponse postGameResultsResponse = new();
 
             MileageMapState mileageMapState = new();
+
+            WheelOptions wheelOptions = new();
 
             var populateMileageStatus = mileageMapState.Populate(conn, clientReq.userId);
             if (populateMileageStatus != SRStatusCode.Ok)
@@ -617,6 +625,10 @@ namespace spikewall.Controllers
                 {
                     exp = 2000;
                 }
+
+                //The total final score divided by a number will add to the current Jackpot value
+                var addJackpotRing = request.score / 25000;
+                wheelOptions.numJackpotRing += (long)addJackpotRing;
 
                 sbyte charactersInRun = 1;
 
@@ -806,8 +818,6 @@ namespace spikewall.Controllers
                 postGameResultsResponse.playerState = playerState;
                 postGameResultsResponse.playCharacterState = playCharacterState;
             }
-            
-            WheelOptions wheelOptions = new();
 
             PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
 
