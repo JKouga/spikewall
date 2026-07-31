@@ -1,4 +1,5 @@
 ﻿using MySqlConnector;
+using spikewall.Response;
 
 namespace spikewall.Object
 {
@@ -68,6 +69,35 @@ namespace spikewall.Object
             generateLeagueDataReader.Close();
 
             return leagueData;
+        }
+
+        public static SRStatusCode AddPlayerToEndlessLeagueState(MySqlConnection conn, string uid)
+        {
+            //get player id
+            var getPlayerSql = Db.GetCommand(@"SELECT * FROM `sw_players` WHERE id = '{0}'", uid);
+            var getPlayerCmd = new MySqlCommand(getPlayerSql, conn);
+            var getPlayerRdr = getPlayerCmd.ExecuteReader();
+
+            if (getPlayerRdr.HasRows)
+            {
+                //placeholder
+                List<PlayerEntry> playerList = new List<PlayerEntry>();
+
+                getPlayerRdr.Read();
+
+                PlayerEntry playerEntry = new()
+                {
+                    friendId = Convert.ToString(getPlayerRdr["id"]),
+                    name = Convert.ToString(getPlayerRdr["username"]),
+                    numRank = Convert.ToInt64(getPlayerRdr["num_rank"]),
+
+                };
+
+
+                getPlayerRdr.Close();
+            }
+
+            return SRStatusCode.Ok;
         }
 
         public LeagueData()
