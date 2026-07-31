@@ -86,6 +86,7 @@ namespace spikewall.Controllers
             }
 
             WheelOptions wheelOptions = new();
+            ChaoWheelOptions chaoWheelOptions = new();
             wheelOptions.Populate(conn, clientReq.userId, ref chaoState);
 
             var wonItemIndex = wheelOptions.itemWon;
@@ -125,7 +126,7 @@ namespace spikewall.Controllers
                     break;
                 case (long)ItemID.ItemRouletteRankUp: // JACKPOT
                     playerState.numRings += (ulong)wheelOptions.numJackpotRing;
-                    wheelOptions.numJackpotRing = 50_000;
+                    wheelOptions.numJackpotRing = 50_000;  //reset jackpot back to default value
                     wheelOptions.rouletteRank = 0;
                     break;
                 case (long)ItemID.NormalEgg: // normal buddy
@@ -137,13 +138,18 @@ namespace spikewall.Controllers
                         Chao chao = new();
                         chao.chaoID = Convert.ToString(getNormalChaoPrizeRdr["chao_id"]);
                         var getChaoIndex = FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
-                        LevelUpChao(conn, Convert.ToInt32(chao.chaoID), ref chaoState, out getChaoIndex);
-                        if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
+
+                        if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
+                        {
+                            LevelUpChao(conn, Convert.ToInt32(chao.chaoID), ref chaoState, out getChaoIndex);
+                            AddChaoToChaoState(conn, Convert.ToInt32(chao.chaoID), ref chaoState, clientReq.userId, ref getChaoIndex);
+                            SaveChaoState(conn, clientReq.userId, chaoState);
+                        }
+                        else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
                         {
                             playerState.chaoEggs += 1;
+                            chaoWheelOptions.numSpecialEgg += 1;
                         }
-                        AddChaoToChaoState(conn, Convert.ToInt32(chao.chaoID), ref chaoState, clientReq.userId, ref getChaoIndex);
-                        SaveChaoState(conn, clientReq.userId, chaoState);
                     }
                     wheelOptions.numRemainingRoulette++;
                     wheelOptions.rouletteRank = 0;
