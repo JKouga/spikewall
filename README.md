@@ -17,7 +17,7 @@ It is designed to be as accurate as possible to the original server with little 
 - Story Mode
 - Timed Mode
 
-## Implemented
+## Implemented, but Needs Testing
 - Roulette
 - Jackpot System
 
@@ -25,12 +25,12 @@ It is designed to be as accurate as possible to the original server with little 
 - Daily Challenge
 - Event support
 - Login Bonus
-
-## To Do
-- High Score saving\*
 - Leaderboards
 - Runners League
 - Daily Battles
+
+## To Do
+- High Score saving\*
 - Support for older clients
 - Web interface for configuration
 
