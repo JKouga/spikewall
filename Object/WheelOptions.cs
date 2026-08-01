@@ -57,12 +57,14 @@ namespace spikewall.Object
                 this.numRouletteToken = playerState.numRouletteTicket;
                 this.numRemainingRoulette = playerState.numRouletteTicket + reader.GetSByte("num_free_spins");
                 this.nextFreeSpin = nextDayStart.ToUnixTimeSeconds();
-                this.numJackpotRing = reader.GetInt64("num_jackpot_ring");
+                var numJackpotRing = reader.GetInt64("num_jackpot_ring");
 
-                if (this.numJackpotRing >= 99_999)
+                if (numJackpotRing >= 99_999)
                 {
-                    this.numJackpotRing = 99_999;
+                    numJackpotRing = 99_999;
                 }
+                this.numJackpotRing = numJackpotRing;
+
                 // Append free spins if applicable
                 if (reader.GetInt64("next_free_spin") != this.nextFreeSpin)
                 {
@@ -100,7 +102,6 @@ namespace spikewall.Object
             this.items = items;
             this.item = itemNum;
             this.itemWeight = itemWeight;
-            this.numJackpotRing = numJackpotRing;
 
             return SRStatusCode.Ok;
         }
