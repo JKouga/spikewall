@@ -85,7 +85,6 @@ namespace spikewall.Controllers
             }
 
             WheelOptions wheelOptions = new();
-            ChaoWheelOptions chaoWheelOptions = new();
             wheelOptions.Populate(conn, clientReq.userId, ref chaoState);
 
             var wonItemIndex = wheelOptions.itemWon;
@@ -146,6 +145,7 @@ namespace spikewall.Controllers
                         }
                         else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
                         {
+                            ChaoWheelOptions chaoWheelOptions = new();
                             playerState.chaoEggs += 1;
                             chaoWheelOptions.numSpecialEgg += 1;
                         }
