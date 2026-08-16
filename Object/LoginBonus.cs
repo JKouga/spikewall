@@ -16,4 +16,17 @@
     {
         public SelectReward[]? selectRewardList { get; set; }
     }
+
+    public class LoginBonusState
+    {
+        // Current login day of Dash Debut Login Bonus; this does not reset when login bonus resets
+        public long? CurrentFirstLoginBonusDay { get; set; }
+
+        // Current login day of Weekly Login Bonus; this does reset when a new day/week arrives
+        public long? CurrentLoginBonusDay { get; set; }
+        public long? LastLoginBonusTime { get; set; }
+        public long? NextLoginBonusTime { get; set; }
+        public long? LoginBonusStartTime { get; set; }
+        public long? LoginBonusEndTime { get; set; }
+    }
 }
