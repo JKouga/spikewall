@@ -24,6 +24,7 @@
         public bool? InRun { get; set; }
         public EventState? EventState { get; set; }
         public long? ResetCount { get; set; } //Incremented automatically when Debug_ResetPlayer is executed on player; this is for bookkeeping purposes
+        public BattleState? BattleState { get; set; }
         public bool? DisallowInactivePurge { get; set; }
         public long? LastLoginPlatformID { get; set; }
     }
