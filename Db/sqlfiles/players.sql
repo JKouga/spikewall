@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS `sw_sessions`;
 
 DROP TABLE IF EXISTS `sw_itemownership`;
 
+DROP TABLE IF EXISTS `sw_playervarious`;
+
 CREATE TABLE
     `sw_players` (
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -63,4 +65,15 @@ CREATE TABLE
     `sw_itemownership` (
         user_id BIGINT UNSIGNED NOT NULL,
         item_id BIGINT UNSIGNED NOT NULL
+    );
+
+CREATE TABLE 
+    `sw_playervarious` (
+        cm_skip_count BIGINT NOT NULL DEFAULT 0,
+        max_energy_recovery BIGINT NOT NULL DEFAULT 5,
+        energy_recovery_time BIGINT NOT NULL DEFAULT 900,
+        one_play_cm_count BIGINT NOT NULL DEFAULT 0,
+        one_play_continue_count BIGINT NOT NULL DEFAULT 2,
+        is_purchased BIGINT NOT NULL DEFAULT 0,
+        hide_league BIGINT NOT NULL DEFAULT 0
     );
