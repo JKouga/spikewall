@@ -6,8 +6,6 @@ DROP TABLE IF EXISTS `sw_itemownership`;
 
 DROP TABLE IF EXISTS `sw_playervarious`;
 
-DROP TABLE IF EXISTS `sw_playerinfo`;
-
 CREATE TABLE
     `sw_players` (
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -78,19 +76,4 @@ CREATE TABLE
         one_play_continue_count BIGINT NOT NULL DEFAULT 2,
         is_purchased BIGINT NOT NULL DEFAULT 0,
         hide_league BIGINT NOT NULL DEFAULT 0
-    );
-
-CREATE TABLE
-    `sw_playerinfo` (
-        username VARCHAR(12) NOT NULL DEFAULT '',
-        password VARCHAR(32) NOT NULL,
-        migrate_password VARCHAR(12),
-        server_key VARCHAR(32) NOT NULL,
-        last_login BIGINT,
-        language BIGINT,
-        suspended_until BIGINT NOT NULL DEFAULT 0,
-        suspend_reason BIGINT NOT NULL DEFAULT 0,
-        last_login_device TEXT,
-        last_login_platform INTEGER,
-        last_login_version TEXT
     );
