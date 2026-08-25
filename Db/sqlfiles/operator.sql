@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS `sw_operatorinfos`;
 CREATE TABLE
   `sw_operatormessages` (
     id BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    for_all TINYINT UNSIGNED NOT NULL DEFAULT '0',
+    for_all TINYINT UNSIGNED NOT NULL DEFAULT 0,
     userid BIGINT UNSIGNED NOT NULL,
     contents TEXT,
     item JSON,
