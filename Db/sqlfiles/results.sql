@@ -25,7 +25,8 @@ CREATE TABLE
     event_id BIGINT,
     event_value INTEGER,
     cheat_result VARCHAR(8) NOT NULL
-  )
+  );
+
 CREATE TABLE
   `sw_quickgameresults` (
     gameid BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -40,7 +41,8 @@ CREATE TABLE
     max_combo INTEGER NOT NOULL,
     closed TINYINT NOT NULL,
     cheat_result VARCHAR(8) NOT NULL
-  )
+  );
+
 CREATE TABLE
   `sw_userresults` (
     id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
