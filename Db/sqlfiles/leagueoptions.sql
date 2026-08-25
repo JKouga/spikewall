@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS `sw_leagueoptions`;
 
-DROP TABLE IF EXISTS `sw_endlessleaguestates`;
+DROP TABLE IF EXISTS `sw_endlessleaguedata`;
 
-DROP TABLE IF EXISTS `sw_quickleaguestates`;
+DROP TABLE IF EXISTS `sw_quickleaguedata`;
 
 CREATE TABLE
     `sw_leagueoptions` (
@@ -59,27 +59,23 @@ VALUES
     ('20', '1', '0', '25');
 
 CREATE TABLE
-    `sw_endlessleaguestates` (
-        user_id BIGINT UNSIGNED NOT NULL,
-        league_id BIGINT UNSIGNED NOT NULL,
+    `sw_endlessleaguedata` (
+        league_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+        group_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
         ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-        group_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        group_member TINYINT UNSIGNED NOT NULL DEFAULT 0,
-        highscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        totalscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        total_score BIGINT UNSIGNED NOT NULL DEFAULT 0
+        start_time BIGINT NOT NULL,
+        reset_time BIGINT NOT NULL,
+        league_player_count INTEGER,
+        group_player_count INTEGER
     );
 
 CREATE TABLE
-    `sw_quickleaguestates` (
-        user_id BIGINT UNSIGNED NOT NULL,
-        league_id BIGINT UNSIGNED NOT NULL,
+    `sw_quickleaguedata` (
+        league_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+        group_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
         ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 1,
-        group_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        group_member TINYINT UNSIGNED NOT NULL DEFAULT 0,
-        highscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        totalscore_rank BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        total_score BIGINT UNSIGNED NOT NULL DEFAULT 0
+        start_time BIGINT NOT NULL,
+        reset_time BIGINT NOT NULL,
+        league_player_count INTEGER,
+        group_player_count INTEGER
     );
