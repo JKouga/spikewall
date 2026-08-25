@@ -9,4 +9,4 @@ CREATE TABLE
     num_beated_enterprise INTEGER NOT NULL,
     energy_renews_at BIGINT NOT NULL,
     score_until_next_raidboss BIGINT NOT NULL
-  )
+  );
