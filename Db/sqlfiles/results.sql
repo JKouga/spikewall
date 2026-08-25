@@ -38,7 +38,7 @@ CREATE TABLE
     daily_challenge_complete TINYINT NOT NULL,
     animals BIGINT NOT NULL,
     max_combo INTEGER NOT NOULL,
-    closed INYINT NOT NULL,
+    closed TINYINT NOT NULL,
     cheat_result VARCHAR(8) NOT NULL
   )
 CREATE TABLE
