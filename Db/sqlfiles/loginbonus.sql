@@ -291,8 +291,8 @@ CREATE TABLE
   `sw_loginbonusstates` (
     id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
     current_start_dash_bonus_day INTEGER,
-    current_login_bonus_week INT,
-    current_login_bonus_day INT,
+    current_login_bonus_week INTEGER,
+    current_login_bonus_day INTEGER,
     last_login_bonus_time BIGINT NOT NULL,
     next_login_bonus_time BIGINT NOT NULL,
     login_bonus_start_time BIGINT NOT NULL,
