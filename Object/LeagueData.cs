@@ -81,11 +81,11 @@ namespace spikewall.Object
             if (getPlayerRdr.HasRows)
             {
                 //placeholder
-                List<PlayerEntry> playerList = new List<PlayerEntry>();
+                List<LeaderboardEntry> playerList = new List<LeaderboardEntry>();
 
                 getPlayerRdr.Read();
 
-                PlayerEntry playerEntry = new()
+                LeaderboardEntry playerEntry = new()
                 {
                     friendId = Convert.ToString(getPlayerRdr["id"]),
                     name = Convert.ToString(getPlayerRdr["username"]),
@@ -99,6 +99,26 @@ namespace spikewall.Object
 
             return SRStatusCode.Ok;
         }
+
+        //public static OperatorScore[] GetHighScoreOpe()
+        //{
+        //    OperatorScore[] operatorEndlessScore;
+        //    using var conn = Db.Get();
+        //    conn.Open();
+        //    var leagueData = GenerateLeagueData(conn, leagueId);
+        //    OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, leagueData, operatorEndlessScore);
+        //    return operatorEndlessScore;
+        //}
+
+        //public static OperatorScore[] GetTotalScoreOpe()
+        //{
+        //    OperatorScore[] operatorEndlessTotalScore;
+        //    using var conn = Db.Get();
+        //    conn.Open();
+        //    var leagueData = GenerateLeagueData(conn, leagueId);
+        //    OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, leagueId, operatorEndlessTotalScore);
+        //    return operatorEndlessTotalScore;
+        //}
 
         public LeagueData()
         {
