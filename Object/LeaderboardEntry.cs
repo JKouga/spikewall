@@ -1,34 +1,49 @@
-﻿using spikewall.Languages;
-using System.Xml.Linq;
+﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.Mvc;
+using spikewall.Languages;
+using spikewall.Request;
+using spikewall.Response;
 
 namespace spikewall.Object
 {
-    public class BattleData
+    public class LeaderboardEntry
     {
         public string? friendId { get; set; }
         public string? name { get; set; }
-        public long? maxScore { get; set; }
-        public long? league { get; set; }
-        public long? loginTime { get; set; }
-        public string? mainChaoId { get; set; }
-        public long? mainChaoLevel { get; set; }
-        public string? subChaoId { get; set; }
-        public long? subChaoLevel { get; set; }
+        public string? url { get; set; }
+        public long? grade { get; set; }
+        public long? exposeOnline { get; set; }
+        public ulong? rankingScore { get; set; }
+        public long? rankChanged { get; set; }
+        public long? energyFlg { get; set; }
+        public long? expireTime { get; set; }
         public long? numRank { get; set; }
+        public long? loginTime { get; set; }
         public string? charaId { get; set; }
         public long? characterLevel { get; set; }
         public string? subCharaId { get; set; }
         public long? subCharaLevel { get; set; }
-        public long? winStreak { get; set; }
-        public bool? isEnergySent { get; set; }
+        public string? mainChaoId { get; set; }
+        public long? mainChaoLevel { get; set; }
+        public string? subChaoId { get; set; }
+        public long? subChaoLevel { get; set; }
         public long? language { get; set; }
+        public ulong? league { get; set; }
+        public ulong? maxScore { get; set; }
 
-        public static BattleData ConvertPlayerToBattleData(Player player)
+        public static LeaderboardEntry PlayerToLeaderboardEntry(Player player, long mode)
         {
             var friendID = player.ID;
-            var username = player.Username;
-            long maxScore = 0;
-            var league = player.PlayerState.quickRankingLeague;
+            var name = player.Username;
+            var url = player.ID + "_findme";
+            var grade = 1;
+            var exposeOnline = 0;
+            ulong rankingScore = 0;
+            var rankChanged = 0;
+            var energyFlg = 0;
+            var expireTime = Convert.ToInt64(DateTime.Now.AddDays(7));
+            var numRank = player.PlayerState.numRank;
             var loginTime = player.LastLogin;
             var mainCharaID = player.PlayerState.mainCharaID.ToString();
             var mainCharaLevel = 0;
@@ -39,9 +54,6 @@ namespace spikewall.Object
             var subChaoID = player.PlayerState.subChaoID.ToString();
             var subChaoLevel = 0;
             var language = Convert.ToInt64(Language.English);
-            var rank = player.PlayerState.numRank;
-            var winStreak = 0;
-            var isEnergySent = 0;
 
             if (Character.FindCharacterInCharacterState(Convert.ToInt32(mainCharaID), player.CharacterState) != -1)
             {
@@ -60,11 +72,32 @@ namespace spikewall.Object
                 subChaoLevel = Convert.ToSByte(player.ChaoState[Chao.FindChaoInChaoState(Convert.ToInt32(mainChaoID), player.ChaoState)].level);
             }
 
-            BattleData battleData = new BattleData()
+            ulong league = 0;
+            ulong maxScore = 0;
+            if (mode == 0)
+            {
+                rankingScore = Convert.ToUInt64(player.PlayerState.totalHighScore);
+                league = (ulong)player.PlayerState.rankingLeague;
+                maxScore = (ulong)player.PlayerState.totalHighScore;
+            }
+            if (mode == 1)
+            {
+                rankingScore = Convert.ToUInt64(player.PlayerState.quickTotalHighScore);
+                league = (ulong)player.PlayerState.quickRankingLeague;
+                maxScore = (ulong)player.PlayerState.quickTotalHighScore;
+            }
+            LeaderboardEntry leaderboardEntry = new LeaderboardEntry()
             {
                 friendId = friendID,
-                name = username,
-                numRank = rank,
+                name = name,
+                url = url,
+                grade = grade,
+                exposeOnline = exposeOnline,
+                rankingScore = rankingScore,
+                rankChanged = rankChanged,
+                energyFlg = energyFlg,
+                expireTime = expireTime,
+                numRank = numRank,
                 loginTime = loginTime,
                 charaId = mainCharaID,
                 characterLevel = mainCharaLevel,
@@ -77,50 +110,9 @@ namespace spikewall.Object
                 language = language,
                 league = league,
                 maxScore = maxScore
+
             };
-
-            return battleData;
+            return leaderboardEntry;
         }
-    }
-
-    public class BattlePair
-    {
-        public long? StartTime { get; set; }
-        public long? EndTime { get; set; }
-        public BattleData? BattleData { get; set; }
-        public BattleData? RivalBattleData { get; set; }
-    }
-    public class RewardBattlePair : BattlePair
-    {
-
-    }
-
-    public class BattleState
-    {
-        public bool? ScoreRecordedToday { get; set; }
-        public long? DailyBattleHighScore { get; set; }
-        public long? PrevDailyBattleHighScore { get; set; }
-        public long? BattleStart { get; set; }
-        public long? BattleEnd { get; set; }
-        public bool? MatchedWithRival { get; set; }
-        public string? RivalID { get; set; }
-        public long? Wins { get; set; }
-        public long? Losses { get; set; }
-        public long? Failures { get; set; }
-        public long? WinStreak { get; set; }
-        public long? LossStreak { get; set; }
-        public BattlePair[]? BattleHistory { get; set; }
-        public bool? PendingReward { get; set; }
-        public RewardBattlePair? PendingRewardData { get; set; }
-    }
-
-    public class BattleStatus
-    {
-        public long? Wins { get; set; }
-        public long? Losses { get; set; }
-        public long? Ties { get; set; }
-        public long? Failures { get; set; }
-        public long? WinStreak { get; set; }
-        public long? LossStreak { get; set; }
     }
 }
