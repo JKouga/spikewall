@@ -32,7 +32,7 @@ namespace spikewall.Object
         public ulong? league { get; set; }
         public ulong? maxScore { get; set; }
 
-        public static LeaderboardEntry PlayerToLeaderboardEntry(Player player, int mode)
+        public static LeaderboardEntry PlayerToLeaderboardEntry(Player player, long mode)
         {
             var friendID = player.ID;
             var name = player.Username;
