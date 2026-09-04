@@ -1,7 +1,13 @@
-DROP TABLE IF EXISTS `sw_dailybattle`;
+DROP TABLE IF EXISTS `sw_dailybattleprizes`;
+
+DROP TABLE IF EXISTS `sw_dailybattlepair`;
+
+DROP TABLE IF EXISTS `sw_dailybattlestates`;
+
+DROP TABLE IF EXISTS `sw_dailybattlestatus`;
 
 CREATE TABLE
-  `sw_dailybattle` (
+  `sw_dailybattleprizes` (
     operator BIGINT NOT NULL DEFAULT 0,
     win_streak BIGINT UNSIGNED NOT NULL DEFAULT 0,
     item MEDIUMINT NOT NULL 900000,
@@ -81,3 +87,41 @@ VALUES
   ('2', '146', '900000', '10'),
   ('0', '150', '900000', '50'),
   ('2', '151', '900000', '10');
+
+  CREATE TABLE 
+    `sw_dailybattlepair` (
+        start_time BIGINT NOT NULL,
+        end_time BIGINT NOT NULL,
+        user_id BIGINT UNSIGNED NOT NULL,
+        score_today BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        rival_id BIGINT UNSIGNED NOT NULL,
+        rival_score_today BIGINT UNSIGNED NOT NULL
+    );
+
+  CREATE TABLE
+    `sw_dailybattlestates` (
+        user_id BIGINT UNSIGNED NOT NULL,
+        score_today BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        highest_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        previous_high_score UNSIGNED UNSIGNED NOT NULL DEFAULT 0,
+        battle_start_time BIGINT NOT NULL,
+        battle_end_time BIGINT NOT NULL,
+        rival_matched SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+        rival_id BIGINT UNSIGNED NOT NULL,
+        wins BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        losses BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        ties BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        win_streak BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        loss_streak BIGINT UNSIGNED NOT NULL DEFAULT 0
+    );
+
+  CREATE TABLE
+    `sw_dailybattlestatus` (
+        user_id BIGINT UNSIGNED NOT NULL,
+        wins BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        losses BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        ties BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        failures BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        win_streak BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        loss_streak BIGINT UNSIGNED NOT NULL DEFAULT 0
+    );

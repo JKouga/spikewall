@@ -146,7 +146,10 @@ namespace spikewall
                                          bool wheelOptions = false,
                                          bool itemRouletteOptions = false,
                                          bool chaoWheelOptions = false,
-                                         bool chaoRouletteOptions = false)
+                                         bool chaoRouletteOptions = false,
+                                         bool leagueOptions = false,
+                                         bool leaguePrizes = false,
+                                         bool dailyBattleOptions = false)
         {
             using var conn = Db.Get();
             conn.Open();
@@ -229,6 +232,21 @@ namespace spikewall
             if (chaoRouletteOptions)
             {
                 QuickRun(conn, "chaoRouletteOptions.sql");
+            }
+
+            if (leagueOptions)
+            {
+                QuickRun(conn, "leagueoptions.sql");
+            }
+
+            if (leaguePrizes)
+            {
+                QuickRun(conn, "leagueprizes.sql");
+            }
+
+            if (dailyBattleOptions)
+            {
+                QuickRun(conn, "dailybattleoptions.sql");
             }
 
             conn.Close();
