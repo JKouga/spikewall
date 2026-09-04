@@ -8,7 +8,7 @@ namespace spikewall.Response
     /// </summary>
     public class WeeklyLeaderboardEntriesResponse : BaseResponse
     {
-        public PlayerEntry? playerEntry { get; set; }
+        public LeaderboardEntry? playerEntry { get; set; }
         public long? lastOffset { get; set; }
         public long? startTime { get; set; }
         public long? resetTime { get; set; }
@@ -17,18 +17,19 @@ namespace spikewall.Response
         public long? totalEntries { get; set; }
 
         // FIXME: This is an array but shouldn't actually be strings, set up "LeaderboardEntry" object
-        public PlayerEntry[]? entriesList { get; set; }
+        public LeaderboardEntry[]? entriesList { get; set; }
 
         public WeeklyLeaderboardEntriesResponse()
         {
-            this.playerEntry = new PlayerEntry();
+            Player player = new();
+            this.playerEntry = LeaderboardEntry.PlayerToLeaderboardEntry(player, (long)mode);
             this.lastOffset = 0;
             this.startTime = 0;
             this.resetTime = 0;
             this.startIndex = 0;
             this.mode = 0;
             this.totalEntries = 0;
-            this.entriesList = Array.Empty<PlayerEntry>();
+            this.entriesList = Array.Empty<LeaderboardEntry>();
         }
     }
 }
