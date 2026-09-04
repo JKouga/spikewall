@@ -22,7 +22,7 @@ namespace spikewall.Response
         public WeeklyLeaderboardEntriesResponse()
         {
             Player player = new();
-            this.playerEntry = LeaderboardEntry.PlayerToLeaderboardEntry(player, (long)mode);
+            this.playerEntry = new LeaderboardEntry();
             this.lastOffset = 0;
             this.startTime = 0;
             this.resetTime = 0;
