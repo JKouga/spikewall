@@ -1,81 +1,77 @@
-DROP TABLE IF EXISTS `sw_leagueoptions`;
-
 DROP TABLE IF EXISTS `sw_endlessleaguedata`;
 
 DROP TABLE IF EXISTS `sw_quickleaguedata`;
 
 CREATE TABLE
-    `sw_leagueoptions` (
-        id MEDIUMINT UNSIGNED NOT NULL PRIMARY KEY,
-        ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-        num_up INTEGER UNSIGNED NOT NULL DEFAULT 40,
-        num_dowm INTEGER UNSIGNED NOT NULL DEFAULT 0
-    );
-
-INSERT INTO
-    `sw_leagueoptions` (id, ranking_mode, num_up, num_down)
-VALUES
-    ('0', '0', '40', '0'),
-    ('0', '1', '40', '0'),
-    ('1', '0', '35', '0'),
-    ('1', '1', '35', '0'),
-    ('2', '0', '35', '0'),
-    ('2', '1', '35', '0'),
-    ('3', '0', '30', '0'),
-    ('3', '1', '30', '0'),
-    ('4', '0', '30', '0'),
-    ('4', '1', '30', '0'),
-    ('5', '0', '30', '0'),
-    ('5', '1', '30', '0'),
-    ('6', '0', '25', '0'),
-    ('6', '1', '25', '0'),
-    ('7', '0', '25', '0'),
-    ('7', '1', '25', '0'),
-    ('8', '0', '25', '0'),
-    ('8', '1', '25', '0'),
-    ('9', '0', '20', '7'),
-    ('9', '1', '20', '7'),
-    ('10', '0', '20', '7'),
-    ('10', '1', '20', '7'),
-    ('11', '0', '20', '7'),
-    ('11', '1', '20', '7'),
-    ('12', '0', '18', '8'),
-    ('12', '1', '18', '8'),
-    ('13', '0', '18', '8'),
-    ('13', '1', '18', '8'),
-    ('14', '0', '18', '8'),
-    ('14', '1', '18', '8'),
-    ('15', '0', '25', '25'),
-    ('15', '1', '25', '25'),
-    ('16', '0', '25', '25'),
-    ('16', '1', '25', '25'),
-    ('17', '0', '25', '25'),
-    ('17', '1', '25', '25'),
-    ('18', '0', '25', '25'),
-    ('18', '1', '25', '25'),
-    ('19', '0', '25', '25'),
-    ('19', '1', '25', '25'),
-    ('20', '0', '0', '25'),
-    ('20', '1', '0', '25');
-
-CREATE TABLE
     `sw_endlessleaguedata` (
         league_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
         group_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
-        ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-        start_time BIGINT NOT NULL,
-        reset_time BIGINT NOT NULL,
-        league_player_count INTEGER,
-        group_player_count INTEGER
+        start_time BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        end_time BIGINT UNSIGNED NOT NULL DEFAULT 604800,
+        num_up INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        num_dowm INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        num_in_group INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        num_in_league BIGINT UNSIGNED NOT NULL DEFAULT 18446744073709551615
     );
+
+INSERT INTO
+    `sw_endlessleaguedata` (league_id, num_up, num_down, num_in_group)
+VALUES
+    ('0', '40', '0', '50'),
+    ('1', '35', '0', '50'),
+    ('2', '35', '0', '50'),
+    ('3', '30', '0', '50'),
+    ('4', '30', '0', '50'),
+    ('5', '30', '0', '50'),
+    ('6', '25', '0', '50'),
+    ('7', '25', '0', '50'),
+    ('8', '25', '0', '50'),
+    ('9', '20', '7', '50'),
+    ('10', '20', '7', '50'),
+    ('11', '20', '7', '50'),
+    ('12', '18', '8', '50'),
+    ('13', '18', '8', '50'),
+    ('14', '18', '8', '50'),
+    ('15', '25', '25', '50'),
+    ('16', '25', '25', '50'),
+    ('17', '25', '25', '50'),
+    ('18', '25', '25', '50'),
+    ('19', '25', '25', '50'),
+    ('20', '0', '25', '50');
 
 CREATE TABLE
     `sw_quickleaguedata` (
         league_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
         group_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
-        ranking_mode MEDIUMINT UNSIGNED NOT NULL DEFAULT 1,
-        start_time BIGINT NOT NULL,
-        reset_time BIGINT NOT NULL,
-        league_player_count INTEGER,
-        group_player_count INTEGER
+        start_time BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        end_time BIGINT UNSIGNED NOT NULL DEFAULT 604800,
+        num_up INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        num_dowm INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        num_in_group INTEGER UNSIGNED NOT NULL DEFAULT 0,
+        num_in_league BIGINT UNSIGNED NOT NULL DEFAULT 18446744073709551615
     );
+
+INSERT INTO
+    `sw_quickleaguedata` (league_id, num_up, num_down, num_in_group)
+VALUES
+    ('0', '40', '0', '50'),
+    ('1', '35', '0', '50'),
+    ('2', '35', '0', '50'),
+    ('3', '30', '0', '50'),
+    ('4', '30', '0', '50'),
+    ('5', '30', '0', '50'),
+    ('6', '25', '0', '50'),
+    ('7', '25', '0', '50'),
+    ('8', '25', '0', '50'),
+    ('9', '20', '7', '50'),
+    ('10', '20', '7', '50'),
+    ('11', '20', '7', '50'),
+    ('12', '18', '8', '50'),
+    ('13', '18', '8', '50'),
+    ('14', '18', '8', '50'),
+    ('15', '25', '25', '50'),
+    ('16', '25', '25', '50'),
+    ('17', '25', '25', '50'),
+    ('18', '25', '25', '50'),
+    ('19', '25', '25', '50'),
+    ('20', '0', '25', '50');

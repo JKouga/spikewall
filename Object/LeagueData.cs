@@ -1,15 +1,17 @@
 ﻿using MySqlConnector;
 using spikewall.Response;
+using static spikewall.Object.Character;
 
 namespace spikewall.Object
 {
     public class LeagueData
     {
-        public string? leagueId { get; set; }
-        public string? groupId { get; set; }
-        public string? numUp { get; set; }
-        public string? numDown { get; set; }
-        public string? numGroupMember { get; set; }
+        public long? leagueId { get; set; }
+        public long? groupId { get; set; }
+        public long? numUp { get; set; }
+        public long? numDown { get; set; }
+        public long? numGroupMember { get; set; }
+        public long? numLeagueMember { get; set; }
         public OperatorScore[]? highScoreOpe { get; set; }
         public OperatorScore[]? totalScoreOpe { get; set; }
 
@@ -53,22 +55,64 @@ namespace spikewall.Object
             Quick
         }
 
-        public static LeagueData GenerateLeagueData(MySqlConnection conn, LeagueID leagueID)
+        public static SRStatusCode GenerateEndlessLeagueData(MySqlConnection conn, out LeagueData[] endlessLeague)
         {
-            var generateLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_leagueoptions` WHERE id = '{0}'", leagueID);
-            var generateLeagueDataCmd = new MySqlCommand(generateLeagueDataSql, conn);
-            var generateLeagueDataReader = generateLeagueDataCmd.ExecuteReader();
+            List<LeagueData> endlessLeagueDataList = new List<LeagueData>();
 
-            generateLeagueDataReader.Read();
-            LeagueData leagueData = new()
+            var generateEndlessLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata`");
+            var generateEndlessLeagueDataCmd = new MySqlCommand(generateEndlessLeagueDataSql, conn);
+            var generateEndlessLeagueDataReader = generateEndlessLeagueDataCmd.ExecuteReader();
+
+            while (generateEndlessLeagueDataReader.Read())
             {
-                leagueId = Convert.ToString(generateLeagueDataReader["id"]),
-                numUp = Convert.ToString(generateLeagueDataReader["num_up"]),
-                numDown = Convert.ToString(generateLeagueDataReader["num_down"])
-            };
-            generateLeagueDataReader.Close();
+                LeagueData endlessLeagueData = new();
+                endlessLeagueData.leagueId = Convert.ToInt64(generateEndlessLeagueDataReader["league_id"]);
+                endlessLeagueData.groupId = Convert.ToInt64(generateEndlessLeagueDataReader["group_id"]);
+                endlessLeagueData.numUp = Convert.ToInt64(generateEndlessLeagueDataReader["num_up"]);
+                endlessLeagueData.numDown = Convert.ToInt64(generateEndlessLeagueDataReader["num_down"]);
+                endlessLeagueData.numGroupMember = Convert.ToInt64(generateEndlessLeagueDataReader["num_in_group"]);
+                endlessLeagueData.numLeagueMember = Convert.ToInt64(generateEndlessLeagueDataReader["num_in_league"]);
+                endlessLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, endlessLeagueData.leagueId);
+                endlessLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, endlessLeagueData.leagueId);
 
-            return leagueData;
+                endlessLeagueDataList.Add(endlessLeagueData);
+            }
+
+            generateEndlessLeagueDataReader.Close();
+
+            endlessLeague = endlessLeagueDataList.ToArray();
+
+            return SRStatusCode.Ok;
+        }
+
+        public static SRStatusCode GenerateQuickLeagueData(MySqlConnection conn, out LeagueData[] quickLeague)
+        {
+            List<LeagueData> quickLeagueDataList = new List<LeagueData>();
+
+            var generateQuickLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguedata`");
+            var generateQuickLeagueDataCmd = new MySqlCommand(generateQuickLeagueDataSql, conn);
+            var generateQuickLeagueDataReader = generateQuickLeagueDataCmd.ExecuteReader();
+
+            while (generateQuickLeagueDataReader.Read())
+            {
+                LeagueData quickLeagueData = new();
+                quickLeagueData.leagueId = Convert.ToInt64(generateQuickLeagueDataReader["league_id"]);
+                quickLeagueData.groupId = Convert.ToInt64(generateQuickLeagueDataReader["group_id"]);
+                quickLeagueData.numUp = Convert.ToInt64(generateQuickLeagueDataReader["num_up"]);
+                quickLeagueData.numDown = Convert.ToInt64(generateQuickLeagueDataReader["num_down"]);
+                quickLeagueData.numGroupMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_group"]);
+                quickLeagueData.numLeagueMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_league"]);
+                quickLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, quickLeagueData.leagueId);
+                quickLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, quickLeagueData.leagueId);
+
+                quickLeagueDataList.Add(quickLeagueData);
+            }
+
+            generateQuickLeagueDataReader.Close();
+
+            quickLeague = quickLeagueDataList.ToArray();
+
+            return SRStatusCode.Ok;
         }
 
         public static SRStatusCode AddPlayerToEndlessLeagueState(MySqlConnection conn, string uid)
@@ -100,35 +144,15 @@ namespace spikewall.Object
             return SRStatusCode.Ok;
         }
 
-        //public static OperatorScore[] GetHighScoreOpe()
+        //public LeagueData()
         //{
-        //    OperatorScore[] operatorEndlessScore;
-        //    using var conn = Db.Get();
-        //    conn.Open();
-        //    var leagueData = GenerateLeagueData(conn, leagueId);
-        //    OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, leagueData, operatorEndlessScore);
-        //    return operatorEndlessScore;
+        //    leagueId = "0";
+        //    groupId = "0";
+        //    numUp = "40";
+        //    numDown = "0";
+        //    numGroupMember = "0";
+        //    highScoreOpe = Array.Empty<OperatorScore>();
+        //    totalScoreOpe = Array.Empty<OperatorScore>();
         //}
-
-        //public static OperatorScore[] GetTotalScoreOpe()
-        //{
-        //    OperatorScore[] operatorEndlessTotalScore;
-        //    using var conn = Db.Get();
-        //    conn.Open();
-        //    var leagueData = GenerateLeagueData(conn, leagueId);
-        //    OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, leagueId, operatorEndlessTotalScore);
-        //    return operatorEndlessTotalScore;
-        //}
-
-        public LeagueData()
-        {
-            leagueId = "0";
-            groupId = "0";
-            numUp = "40";
-            numDown = "0";
-            numGroupMember = "0";
-            highScoreOpe = Array.Empty<OperatorScore>();
-            totalScoreOpe = Array.Empty<OperatorScore>();
-        }
     }
 }

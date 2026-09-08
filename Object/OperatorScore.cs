@@ -10,7 +10,7 @@ namespace spikewall.Object
         public ulong Number { get; set; } //This is the placement of the League within your group; for Daily Battles, it's based on your win streak
         public Item[] PresentList { get; set; } //This is the prize you get based on the number you are within your group; for Daily Battles, it's based on your win streak
 
-        public static SRStatusCode GenerateEndlessLeagueHighScorePrizes(MySqlConnection conn, ref LeagueID leagueID, out OperatorScore[] endlessLeagueHighScorePrizeArray)
+        public static OperatorScore[] GenerateEndlessLeagueHighScorePrizes(MySqlConnection conn, long? leagueID)
         {
             var generateEndlessLeaguePrizesSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguehighscoreprizes` WHERE league_id = '{0}'", leagueID);
             var generateEndlessLeaguePrizesCmd = new MySqlCommand(generateEndlessLeaguePrizesSql, conn);
@@ -39,11 +39,11 @@ namespace spikewall.Object
                 generateEndlessLeaguePrizesRdr.Read();
             }
             generateEndlessLeaguePrizesRdr.Close();
-            endlessLeagueHighScorePrizeArray = endlessLeaguePrizeList.ToArray();
-            return SRStatusCode.Ok;
+            OperatorScore[] endlessLeagueHighScorePrizeArray = endlessLeaguePrizeList.ToArray();
+            return endlessLeagueHighScorePrizeArray;
         }
 
-        public static SRStatusCode GenerateEndlessLeagueTotalScorePrizes(MySqlConnection conn, ref LeagueID leagueID, out OperatorScore[] endlessLeagueTotalScorePrizeArray)
+        public static OperatorScore[] GenerateEndlessLeagueTotalScorePrizes(MySqlConnection conn, long? leagueID)
         {
             var generateEndlessLeaguePrizesSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguetotalscoreprizes` WHERE league_id = '{0}'", leagueID);
             var generateEndlessLeaguePrizesCmd = new MySqlCommand(generateEndlessLeaguePrizesSql, conn);
@@ -73,10 +73,10 @@ namespace spikewall.Object
                 generateEndlessLeaguePrizesRdr.Read();
             }
             generateEndlessLeaguePrizesRdr.Close();
-            endlessLeagueTotalScorePrizeArray = endlessLeaguePrizeList.ToArray();
-            return SRStatusCode.Ok;
+            OperatorScore[] endlessLeagueTotalScorePrizeArray = endlessLeaguePrizeList.ToArray();
+            return endlessLeagueTotalScorePrizeArray;
         }
-        public static SRStatusCode GenerateQuickLeagueHighScorePrizes(MySqlConnection conn, ref LeagueID leagueID, OperatorScore[] quickLeagueHighScorePrizeArray)
+        public static OperatorScore[] GenerateQuickLeagueHighScorePrizes(MySqlConnection conn, long? leagueID)
         {
             var generateQuickLeaguePrizesSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguehighscoreprizes` WHERE league_id = '{0}'", leagueID);
             var generateQuickLeaguePrizesCmd = new MySqlCommand(generateQuickLeaguePrizesSql, conn);
@@ -107,11 +107,11 @@ namespace spikewall.Object
                 generateQuickLeaguePrizesRdr.Read();
             }
             generateQuickLeaguePrizesRdr.Close();
-            quickLeagueHighScorePrizeArray = quickLeaguePrizeList.ToArray();
-            return SRStatusCode.Ok;
+            OperatorScore[] quickLeagueHighScorePrizeArray = quickLeaguePrizeList.ToArray();
+            return quickLeagueHighScorePrizeArray;
         }
 
-        public static SRStatusCode GenerateQuickLeagueTotalScorePrizes(MySqlConnection conn, ref LeagueID leagueID, out OperatorScore[] quickLeagueTotalScorePrizeArray)
+        public static OperatorScore[] GenerateQuickLeagueTotalScorePrizes(MySqlConnection conn, long leagueID)
         {
             var generateQuickLeaguePrizesSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguetotalscoreprizes` WHERE league_id = '{0}'", leagueID);
             var generateQuickLeaguePrizesCmd = new MySqlCommand(generateQuickLeaguePrizesSql, conn);
@@ -142,11 +142,11 @@ namespace spikewall.Object
                 generateQuickLeaguePrizesRdr.Read();
             }
             generateQuickLeaguePrizesRdr.Close();
-            quickLeagueTotalScorePrizeArray = quickLeaguePrizeList.ToArray();
-            return SRStatusCode.Ok;
+            OperatorScore[] quickLeagueTotalScorePrizeArray = quickLeaguePrizeList.ToArray();
+            return quickLeagueTotalScorePrizeArray;
         }
 
-        public static SRStatusCode GenerateDailyBattlePrizes(MySqlConnection conn, out OperatorScore[] dailyBattlePrizesArray)
+        public static OperatorScore[] GenerateDailyBattlePrizes(MySqlConnection conn)
         {
             var generateDailyBattlePrizesSql = Db.GetCommand(@"SELECT * FROM `sw_dailybattle`");
             var generateDailyBattlePrizesCmd = new MySqlCommand(generateDailyBattlePrizesSql, conn);
@@ -187,8 +187,8 @@ namespace spikewall.Object
             }
             generateDailyBattlePrizesRdr.Close();
 
-            dailyBattlePrizesArray = dailyBattlePrizeList.ToArray();
-            return SRStatusCode.Ok;
+            OperatorScore[] dailyBattlePrizesArray = dailyBattlePrizeList.ToArray();
+            return dailyBattlePrizesArray;
         }
     }
 }
