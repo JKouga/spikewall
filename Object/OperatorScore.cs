@@ -111,7 +111,7 @@ namespace spikewall.Object
             return quickLeagueHighScorePrizeArray;
         }
 
-        public static OperatorScore[] GenerateQuickLeagueTotalScorePrizes(MySqlConnection conn, long leagueID)
+        public static OperatorScore[] GenerateQuickLeagueTotalScorePrizes(MySqlConnection conn, long? leagueID)
         {
             var generateQuickLeaguePrizesSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguetotalscoreprizes` WHERE league_id = '{0}'", leagueID);
             var generateQuickLeaguePrizesCmd = new MySqlCommand(generateQuickLeaguePrizesSql, conn);
