@@ -102,8 +102,8 @@ namespace spikewall.Object
                 quickLeagueData.numDown = Convert.ToInt64(generateQuickLeagueDataReader["num_down"]);
                 quickLeagueData.numGroupMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_group"]);
                 quickLeagueData.numLeagueMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_league"]);
-                quickLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, quickLeagueData.leagueId);
-                quickLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, quickLeagueData.leagueId);
+                quickLeagueData.highScoreOpe = OperatorScore.GenerateQuickLeagueHighScorePrizes(conn, quickLeagueData.leagueId);
+                quickLeagueData.highScoreOpe = OperatorScore.GenerateQuickLeagueTotalScorePrizes(conn, quickLeagueData.leagueId);
 
                 quickLeagueDataList.Add(quickLeagueData);
             }
