@@ -75,6 +75,13 @@ namespace spikewall.Object
                 endlessLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, endlessLeagueData.leagueId);
                 endlessLeagueData.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, endlessLeagueData.leagueId);
 
+                if (endlessLeagueData.numGroupMember > 50)
+                {
+                    endlessLeagueData.groupId += 1;
+                    endlessLeagueData.numGroupMember = 0;
+                    endlessLeagueData.numGroupMember += 1;
+                }
+
                 endlessLeagueDataList.Add(endlessLeagueData);
             }
 
@@ -104,6 +111,13 @@ namespace spikewall.Object
                 quickLeagueData.numLeagueMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_league"]);
                 quickLeagueData.highScoreOpe = OperatorScore.GenerateQuickLeagueHighScorePrizes(conn, quickLeagueData.leagueId);
                 quickLeagueData.highScoreOpe = OperatorScore.GenerateQuickLeagueTotalScorePrizes(conn, quickLeagueData.leagueId);
+
+                if (quickLeagueData.numGroupMember > 50)
+                {
+                    quickLeagueData.groupId += 1;
+                    quickLeagueData.numGroupMember = 0;
+                    quickLeagueData.numGroupMember += 1;
+                }
 
                 quickLeagueDataList.Add(quickLeagueData);
             }
