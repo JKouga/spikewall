@@ -48,6 +48,8 @@ namespace spikewall.Object
         public long? leagueResetTime { get; set; }
         public long? rankingLeagueGroup { get; set; }
         public long? quickRankingLeagueGroup { get; set; }
+        public long? rankingLeagueGroupID { get; set; }
+        public long? quickRankingLeagueGroupID { get; set; }
         public ulong? totalScore { get; set; }
         public ulong? quickTotalScore { get; set; }
         public ulong? highTotalScore { get; set; }
@@ -107,6 +109,8 @@ namespace spikewall.Object
             this.leagueResetTime = reader.GetInt64("league_reset_time");
             this.rankingLeagueGroup = reader.GetInt64("ranking_league_group");
             this.quickRankingLeagueGroup = reader.GetInt64("quick_ranking_league_group");
+            this.rankingLeagueGroupID = reader.GetInt64("ranking_league_group_id");
+            this.quickRankingLeagueGroupID = reader.GetInt64("quick_ranking_league_group_id");
             this.totalScore = reader.GetUInt64("story_total_score");
             this.quickTotalScore = reader.GetUInt64("quick_total_score");
             this.highTotalScore = reader.GetUInt64("highest_story_total_score");
