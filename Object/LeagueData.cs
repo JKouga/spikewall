@@ -186,7 +186,7 @@ namespace spikewall.Object
                     {
                         endlessLeague.leagueId += 1;
                     }
-                    else if (playerState.rankingLeagueGroup >= (endlessLeague.numGroupMember - endlessLeague.numDown))
+                    else if (endlessLeague.leagueId >= 9 && playerState.rankingLeagueGroup >= (endlessLeague.numGroupMember - endlessLeague.numDown))
                     {
                         endlessLeague.leagueId -= 1;
                     }
@@ -197,32 +197,6 @@ namespace spikewall.Object
             }
 
             endlessLeagueReader.Close();
-
-            switch (endlessLeague.leagueId)
-            {
-                case 3:
-                case 6:
-                case 9:
-                case 12:
-                case 15:
-                case 18:
-                case 19:
-                case 20:
-                    var populateChaoState = Chao.PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
-                    var shahraSql = Db.GetCommand("SELECT * FROM `sw_chao` WHERE id = {0}", ChaoBase.ChaoID.Shahra);
-                    var shahraCommand = new MySqlCommand(shahraSql, conn);
-                    var shahraReader = shahraCommand.ExecuteReader();
-                    if (shahraReader.HasRows)
-                    {
-                        Chao chao = new();
-                        chao.chaoID = Convert.ToString(shahraReader["chao_id"]);
-                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
-                        // add Shahra to Gift Box; need to determine logic
-                    }
-                    break;
-                default:
-                    break;
-            }
 
             return SRStatusCode.Ok;
         }
@@ -282,7 +256,7 @@ namespace spikewall.Object
                     {
                         quickLeague.leagueId += 1;
                     }
-                    else if (playerState.quickRankingLeagueGroup >= (quickLeague.numGroupMember - quickLeague.numDown))
+                    else if (quickLeague.leagueId >= 9 && playerState.quickRankingLeagueGroup >= (quickLeague.numGroupMember - quickLeague.numDown))
                     {
                         quickLeague.leagueId -= 1;
                     }
@@ -293,32 +267,6 @@ namespace spikewall.Object
             }
 
             quickLeagueReader.Close();
-
-            switch (quickLeague.leagueId)
-            {
-                case 3:
-                case 6:
-                case 9:
-                case 12:
-                case 15:
-                case 18:
-                case 19:
-                case 20:
-                    var populateChaoState = Chao.PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
-                    var darkQueenSql = Db.GetCommand("SELECT * FROM `sw_chao` WHERE id = {0}", ChaoBase.ChaoID.DarkQueen);
-                    var darkQueenCommand = new MySqlCommand(darkQueenSql, conn);
-                    var darkQueenReader = darkQueenCommand.ExecuteReader();
-                    if (darkQueenReader.HasRows)
-                    {
-                        Chao chao = new();
-                        chao.chaoID = Convert.ToString(darkQueenReader["chao_id"]);
-                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
-                        // add Dark Queen to Gift Box; need to determine logic for buddies in gift box
-                    }
-                    break;
-                default:
-                    break;
-            }
 
             return SRStatusCode.Ok;
         }
