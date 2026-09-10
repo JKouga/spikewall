@@ -60,9 +60,9 @@ CREATE TABLE
         league_reset_time BIGINT NOT NULL,
         ranking_league_group BIGINT NOT NULL DEFAULT 0,
         quick_ranking_league_group BIGINT NOT NULL DEFAULT 0,
-        total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        story_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
         quick_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
-        highest_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        highest_story_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
         highest_quick_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0
     );
 
