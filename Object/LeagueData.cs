@@ -1,5 +1,6 @@
 ﻿using MySqlConnector;
 using spikewall.Response;
+using System.Security.Cryptography;
 using static spikewall.Object.Character;
 
 namespace spikewall.Object
@@ -129,30 +130,194 @@ namespace spikewall.Object
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode AddPlayerToEndlessLeagueState(MySqlConnection conn, string uid)
+        public static SRStatusCode CalculateAndResetEndlessRunnersLeague(MySqlConnection conn, string uid)
         {
-            //get player id
-            var getPlayerSql = Db.GetCommand(@"SELECT * FROM `sw_players` WHERE id = '{0}'", uid);
-            var getPlayerCmd = new MySqlCommand(getPlayerSql, conn);
-            var getPlayerRdr = getPlayerCmd.ExecuteReader();
-
-            if (getPlayerRdr.HasRows)
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, uid);
+            if (populateStatus != SRStatusCode.Ok)
             {
-                //placeholder
-                List<LeaderboardEntry> playerList = new List<LeaderboardEntry>();
+                return populateStatus;
+            }
 
-                getPlayerRdr.Read();
+            DateTimeOffset leagueStart = new DateTime(
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                0, 0, 0, 0);
 
-                LeaderboardEntry playerEntry = new()
+            DateTimeOffset leagueReset = new DateTime(
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                0, 0, 0, 0).AddDays(7);
+
+            LeagueData endlessLeague = new();
+            var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, out LeagueData[] endlessLeagueList);
+            if (generateEndlessLeagueStatus != SRStatusCode.Ok)
+            {
+                return generateEndlessLeagueStatus;
+            }
+
+            var endlessLeagueSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata` WHERE league_id = '{0}'", endlessLeagueList[Convert.ToInt32(endlessLeague.leagueId)]);
+            var endlessLeagueCommand = new MySqlCommand(endlessLeagueSql, conn);
+            var endlessLeagueReader = endlessLeagueCommand.ExecuteReader();
+
+            if (endlessLeagueReader.HasRows)
+            {
+
+                endlessLeague.leagueId = Convert.ToInt64(endlessLeagueReader["league_id"]);
+                endlessLeague.groupId = Convert.ToInt64(endlessLeagueReader["group_id"]);
+                endlessLeague.numUp = Convert.ToInt64(endlessLeagueReader["num_up"]);
+                endlessLeague.numDown = Convert.ToInt64(endlessLeagueReader["num_down"]);
+                endlessLeague.numGroupMember = Convert.ToInt64(endlessLeagueReader["num_in_group"]);
+                endlessLeague.numLeagueMember = Convert.ToInt64(endlessLeagueReader["num_in_league"]);
+                endlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, endlessLeague.leagueId);
+                endlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, endlessLeague.leagueId);
+
+                var playerSql = Db.GetCommand(@"SELECT * FROM `sw_player`");
+                var playerCommand = new MySqlCommand(playerSql, conn);
+                var playerReader = playerCommand.ExecuteReader();
+
+                if (playerReader.HasRows)
                 {
-                    friendId = Convert.ToString(getPlayerRdr["id"]),
-                    name = Convert.ToString(getPlayerRdr["username"]),
-                    numRank = Convert.ToInt64(getPlayerRdr["num_rank"]),
+                    playerState.rankingLeagueGroup = Convert.ToInt64(playerReader["ranking_league_group"]);
+                    playerState.rankingLeague = Convert.ToInt64(playerReader["ranking_league"]);
+                    if (playerState.rankingLeagueGroup <= endlessLeague.numUp)
+                    {
+                        endlessLeague.leagueId += 1;
+                    }
+                    else if (playerState.rankingLeagueGroup >= (endlessLeague.numGroupMember - endlessLeague.numDown))
+                    {
+                        endlessLeague.leagueId -= 1;
+                    }
+                    playerState.rankingLeague = endlessLeague.leagueId;
+                }
 
-                };
+                playerReader.Close();
+            }
 
+            endlessLeagueReader.Close();
 
-                getPlayerRdr.Close();
+            switch (endlessLeague.leagueId)
+            {
+                case 3:
+                case 6:
+                case 9:
+                case 12:
+                case 15:
+                case 18:
+                case 19:
+                case 20:
+                    var populateChaoState = Chao.PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
+                    var shahraSql = Db.GetCommand("SELECT * FROM `sw_chao` WHERE id = {0}", ChaoBase.ChaoID.Shahra);
+                    var shahraCommand = new MySqlCommand(shahraSql, conn);
+                    var shahraReader = shahraCommand.ExecuteReader();
+                    if (shahraReader.HasRows)
+                    {
+                        Chao chao = new();
+                        chao.chaoID = Convert.ToString(shahraReader["chao_id"]);
+                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
+                        // add Shahra to Gift Box; need to determine logic
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return SRStatusCode.Ok;
+        }
+        public static SRStatusCode CalculateAndResetQuickRunnersLeague(MySqlConnection conn, string uid)
+        {
+
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, uid);
+            if (populateStatus != SRStatusCode.Ok)
+            {
+                return populateStatus;
+            }
+
+            LeagueData quickLeague = new();
+            var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, out LeagueData[] quickLeagueList);
+            if (generateQuickLeagueStatus != SRStatusCode.Ok)
+            {
+                return generateQuickLeagueStatus;
+            }
+
+            DateTimeOffset leagueStart = new DateTime(
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                0, 0, 0, 0);
+
+            DateTimeOffset leagueReset = new DateTime(
+                DateTime.Now.Year,
+                DateTime.Now.Month,
+                DateTime.Now.Day,
+                0, 0, 0, 0).AddDays(7);
+
+            var quickLeagueSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguedata` WHERE league_id = '{0}'", quickLeagueList[Convert.ToInt32(quickLeague.leagueId)]);
+            var quickLeagueCommand = new MySqlCommand(quickLeagueSql, conn);
+            var quickLeagueReader = quickLeagueCommand.ExecuteReader();
+
+            if (quickLeagueReader.HasRows)
+            {
+                quickLeague.leagueId = Convert.ToInt64(quickLeagueReader["league_id"]);
+                quickLeague.groupId = Convert.ToInt64(quickLeagueReader["group_id"]);
+                quickLeague.numUp = Convert.ToInt64(quickLeagueReader["num_up"]);
+                quickLeague.numDown = Convert.ToInt64(quickLeagueReader["num_down"]);
+                quickLeague.numGroupMember = Convert.ToInt64(quickLeagueReader["num_in_group"]);
+                quickLeague.numLeagueMember = Convert.ToInt64(quickLeagueReader["num_in_league"]);
+                quickLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, quickLeague.leagueId);
+                quickLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, quickLeague.leagueId);
+
+                var playerSql = Db.GetCommand(@"SELECT * FROM `sw_player`");
+                var playerCommand = new MySqlCommand(playerSql, conn);
+                var playerReader = playerCommand.ExecuteReader();
+
+                if (playerReader.HasRows)
+                {
+                    playerState.quickRankingLeagueGroup = Convert.ToInt64(playerReader["quick_ranking_league_group"]);
+                    playerState.quickRankingLeague = Convert.ToInt64(playerReader["quick_ranking_league"]);
+                    if (playerState.quickRankingLeagueGroup <= quickLeague.numUp)
+                    {
+                        quickLeague.leagueId += 1;
+                    }
+                    else if (playerState.quickRankingLeagueGroup >= (quickLeague.numGroupMember - quickLeague.numDown))
+                    {
+                        quickLeague.leagueId -= 1;
+                    }
+                    playerState.quickRankingLeague = quickLeague.leagueId;
+                }
+
+                playerReader.Close();
+            }
+
+            quickLeagueReader.Close();
+
+            switch (quickLeague.leagueId)
+            {
+                case 3:
+                case 6:
+                case 9:
+                case 12:
+                case 15:
+                case 18:
+                case 19:
+                case 20:
+                    var populateChaoState = Chao.PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
+                    var darkQueenSql = Db.GetCommand("SELECT * FROM `sw_chao` WHERE id = {0}", ChaoBase.ChaoID.DarkQueen);
+                    var darkQueenCommand = new MySqlCommand(darkQueenSql, conn);
+                    var darkQueenReader = darkQueenCommand.ExecuteReader();
+                    if (darkQueenReader.HasRows)
+                    {
+                        Chao chao = new();
+                        chao.chaoID = Convert.ToString(darkQueenReader["chao_id"]);
+                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
+                        // add Dark Queen to Gift Box; need to determine logic for buddies in gift box
+                    }
+                    break;
+                default:
+                    break;
             }
 
             return SRStatusCode.Ok;
