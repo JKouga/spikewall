@@ -107,9 +107,9 @@ namespace spikewall.Object
             this.leagueResetTime = reader.GetInt64("league_reset_time");
             this.rankingLeagueGroup = reader.GetInt64("ranking_league_group");
             this.quickRankingLeagueGroup = reader.GetInt64("quick_ranking_league_group");
-            this.totalScore = reader.GetUInt64("total_score");
+            this.totalScore = reader.GetUInt64("story_total_score");
             this.quickTotalScore = reader.GetUInt64("quick_total_score");
-            this.highTotalScore = reader.GetUInt64("highest_total_score");
+            this.highTotalScore = reader.GetUInt64("highest_story_total_score");
             this.quickHighTotalScore = reader.GetUInt64("highest_quick_total_score");
 
             string equipItemList = reader.GetString("equip_item_list");
