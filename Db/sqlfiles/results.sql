@@ -15,7 +15,7 @@ CREATE TABLE
     daily_challenge_value BIGINT NOT NULL,
     daily_challenge_complete TINYINT NOT NULL,
     animals BIGINT NOT NULL,
-    max_combo INTEGER NOT NOULL,
+    max_combo INTEGER NOT NULL,
     closed TINYINT NOT NULL,
     boss_destroyed TINYINT NOT NULL,
     chapter_clear TINYINT NOT NULL,
