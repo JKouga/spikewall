@@ -186,7 +186,7 @@ namespace spikewall.Object
                     {
                         endlessLeague.leagueId += 1;
                     }
-                    else if (endlessLeague.leagueId >= 9 && playerState.rankingLeagueGroup >= (endlessLeague.numGroupMember - endlessLeague.numDown))
+                    else if (endlessLeague.leagueId >= 9 && playerState.rankingLeagueGroup > (endlessLeague.numGroupMember - endlessLeague.numDown))
                     {
                         endlessLeague.leagueId -= 1;
                     }
@@ -256,7 +256,7 @@ namespace spikewall.Object
                     {
                         quickLeague.leagueId += 1;
                     }
-                    else if (quickLeague.leagueId >= 9 && playerState.quickRankingLeagueGroup >= (quickLeague.numGroupMember - quickLeague.numDown))
+                    else if (quickLeague.leagueId >= 9 && playerState.quickRankingLeagueGroup > (quickLeague.numGroupMember - quickLeague.numDown))
                     {
                         quickLeague.leagueId -= 1;
                     }
