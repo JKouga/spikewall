@@ -49,7 +49,21 @@ CREATE TABLE
         num_playing BIGINT NOT NULL DEFAULT 0,
         num_animals BIGINT UNSIGNED NOT NULL DEFAULT 0,
         num_rank INTEGER NOT NULL DEFAULT 0,
-        equip_item_list TINYTEXT NOT NULL DEFAULT ''
+        equip_item_list TINYTEXT NOT NULL DEFAULT '',
+        daily_challenge_cat_num BIGINT NOT NULL DEFAULT 0,
+        daily_challenge_set_num BIGINT NOT NULL DEFAULT 0,
+        daily_challenge_position_number BIGINT NOT NULL DEFAULT 0,
+        next_num_daily_challenge BIGINT NOT NULL DEFAULT 0,
+        league_high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        quick_league_high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        league_start_time BIGINT NOT NULL,
+        league_reset_time BIGINT NOT NULL,
+        ranking_league_group BIGINT NOT NULL DEFAULT 0,
+        quick_ranking_league_group BIGINT NOT NULL DEFAULT 0,
+        total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        quick_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        highest_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        highest_quick_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0
     );
 
 ALTER TABLE `sw_players` AUTO_INCREMENT = 1000000000;

@@ -38,6 +38,20 @@ namespace spikewall.Object
         public ulong? numPlaying { get; set; }
         public ulong? numAnimals { get; set; }
         public short? numRank { get; set; }
+        public long? dailyChalCatNum { get; set; }
+        public long? dailyChalSetNum { get; set; }
+        public long? dailyChalPosNum { get; set; }
+        public long? nextNumDailyChallenge { get; set; }
+        public ulong? leagueHighScore { get; set; }
+        public ulong? quickLeagueHighScore { get; set; }
+        public long? leagueStartTime { get; set; }
+        public long? leagueResetTime { get; set; }
+        public long? rankingLeagueGroup { get; set; }
+        public long? quickRankingLeagueGroup { get; set; }
+        public ulong? totalScore { get; set; }
+        public ulong? quickTotalScore { get; set; }
+        public ulong? highTotalScore { get; set; }
+        public ulong? quickHighTotalScore { get; set; }
 
         public SRStatusCode Populate(MySqlConnection conn, string uid)
         {
@@ -83,6 +97,20 @@ namespace spikewall.Object
             this.numPlaying = reader.GetUInt64("num_playing");
             this.numAnimals = reader.GetUInt64("num_animals");
             this.numRank = reader.GetInt16("num_rank");
+            this.dailyChalCatNum = reader.GetInt64("daily_challenge_cat_num");
+            this.dailyChalSetNum = reader.GetInt64("daily_challenge_set_num");
+            this.dailyChalPosNum = reader.GetInt64("daily_challenge_position_number");
+            this.nextNumDailyChallenge = reader.GetInt64("next_num_daily_challenge");
+            this.leagueHighScore = reader.GetUInt64("league_high_score");
+            this.quickLeagueHighScore = reader.GetUInt64("quick_league_high_score");
+            this.leagueStartTime = reader.GetInt64("league_start_time");
+            this.leagueResetTime = reader.GetInt64("league_reset_time");
+            this.rankingLeagueGroup = reader.GetInt64("ranking_league_group");
+            this.quickRankingLeagueGroup = reader.GetInt64("quick_ranking_league_group");
+            this.totalScore = reader.GetUInt64("total_score");
+            this.quickTotalScore = reader.GetUInt64("quick_total_score");
+            this.highTotalScore = reader.GetUInt64("highest_total_score");
+            this.quickHighTotalScore = reader.GetUInt64("highest_quick_total_score");
 
             string equipItemList = reader.GetString("equip_item_list");
             if (string.IsNullOrEmpty(equipItemList)) {
@@ -133,8 +161,22 @@ namespace spikewall.Object
                     num_playing = '{26}',
                     num_animals = '{27}',
                     num_rank = '{28}',
-                    equip_item_list = '{29}'
-                  WHERE id = '{30}';",
+                    equip_item_list = '{29}',
+                    daily_challenge_cat_num = '{30}',
+                    daily_challenge_set_num = '{31}',
+                    daily_challenge_position_number = '{32}',
+                    next_num_daily_challenge = '{33}',
+                    league_high_score = '{34}',
+                    quick_league_high_score = '{35}',
+                    league_start_time = '{36}',
+                    league_reset_time = '{37}',
+                    ranking_league_group = '{38}',
+                    quick_ranking_league_group = '{39}',
+                    total_score = '{40}',
+                    quick_total_score = '{41}',
+                    highest_total_score = '{42}',
+                    highest_quick_total_score = '{43}',
+                  WHERE id = '{44}';",
                     this.mainCharaID,
                     this.subCharaID,
                     this.mainChaoID,
@@ -165,6 +207,20 @@ namespace spikewall.Object
                     this.numAnimals,
                     this.numRank,
                     Db.ConvertIntArrayToDBList(this.equipItemList),
+                    this.dailyChalCatNum,
+                    this.dailyChalSetNum,
+                    this.dailyChalPosNum,
+                    this.nextNumDailyChallenge,
+                    this.leagueHighScore,
+                    this.quickLeagueHighScore,
+                    this.leagueStartTime,
+                    this.leagueResetTime,
+                    this.rankingLeagueGroup,
+                    this.quickRankingLeagueGroup,
+                    this.totalScore,
+                    this.quickTotalScore,
+                    this.highTotalScore,
+                    this.quickHighTotalScore,
                     uid);
             var command = new MySqlCommand(sql, conn);
 
