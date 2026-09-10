@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
+using MySqlConnector;
 using spikewall.Languages;
 using spikewall.Request;
 using spikewall.Response;
