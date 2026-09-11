@@ -162,65 +162,269 @@ namespace spikewall.Object
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode GetEndlessHighScores(MySqlConnection conn, string uid)
+        public static SRStatusCode GetEndlessHighScores(MySqlConnection conn, string uid, out LeaderboardEntry playerEntry, out LeaderboardEntry[] endlessLeaderboard, out long endlessLeaderboardPlayers)
         {
             PlayerState playerState = new();
             var populateStatus = playerState.Populate(conn, uid);
-            if (populateStatus != SRStatusCode.Ok)
-            {
-                return populateStatus;
-            }
 
-            var endlessHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY story_high_score DESC");
+            var endlessHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY story_high_score DESC, highest_story_total_score DESC");
             var endlessHighScoresCommand = new MySqlCommand(endlessHighScoresSql, conn);
-            endlessHighScoresCommand.ExecuteNonQuery();
+            var endlessHighScoresReader = endlessHighScoresCommand.ExecuteReader();
 
+            List<LeaderboardEntry> leaderboardEntryList = new List<LeaderboardEntry>();
+
+            while (endlessHighScoresReader.Read())
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("ranking_league"),
+                    rankingScore = Convert.ToUInt64("ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("ranking_league"),
+                    maxScore = Convert.ToUInt64("story_high_score")
+                };
+
+                leaderboardEntryList.Add(leaderboardEntry);
+            }
+
+            endlessLeaderboard = leaderboardEntryList.ToArray();
+            endlessLeaderboardPlayers = endlessLeaderboard.Count();
+
+            var endlessOwnHighScoreSql = Db.GetCommand("SELECT * FROM `sw_players` WHERE id='{0}'", uid);
+            var endlessOwnHighScoreCommand = new MySqlCommand(endlessOwnHighScoreSql, conn);
+            var endlessOwnHighScoreReader = endlessOwnHighScoreCommand.ExecuteReader();
+
+            playerEntry = new();
+
+            if (endlessOwnHighScoreReader.HasRows)
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("ranking_league"),
+                    rankingScore = Convert.ToUInt64("ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("ranking_league"),
+                    maxScore = Convert.ToUInt64("story_high_score")
+                };
+
+                playerEntry = leaderboardEntry;
+            }
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode GetQuickHighScores(MySqlConnection conn, string uid)
+        public static SRStatusCode GetQuickHighScores(MySqlConnection conn, string uid, out LeaderboardEntry playerEntry, out LeaderboardEntry[] quickLeaderboard, out long quickLeaderboardPlayers)
         {
             PlayerState playerState = new();
             var populateStatus = playerState.Populate(conn, uid);
-            if (populateStatus != SRStatusCode.Ok)
-            {
-                return populateStatus;
-            }
 
-            var quickHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY quick_high_score DESC");
+            var quickHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY quick_high_score DESC, highest_quick_total_score DESC");
             var quickHighScoresCommand = new MySqlCommand(quickHighScoresSql, conn);
-            quickHighScoresCommand.ExecuteNonQuery();
+            var quickHighScoresReader = quickHighScoresCommand.ExecuteReader();
 
+            List<LeaderboardEntry> leaderboardEntryList = new List<LeaderboardEntry>();
+
+            while (quickHighScoresReader.Read())
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("quick_ranking_league"),
+                    rankingScore = Convert.ToUInt64("quick_ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("quick_ranking_league"),
+                    maxScore = Convert.ToUInt64("quick_high_score")
+                };
+
+                leaderboardEntryList.Add(leaderboardEntry);
+            }
+
+            quickLeaderboard = leaderboardEntryList.ToArray();
+
+            quickLeaderboardPlayers = quickLeaderboard.Count();
+
+            var quickOwnHighScoreSql = Db.GetCommand("SELECT * FROM `sw_players` WHERE id='{0}'", uid);
+            var quickOwnHighScoreCommand = new MySqlCommand(quickOwnHighScoreSql, conn);
+            var quickOwnHighScoreReader = quickOwnHighScoreCommand.ExecuteReader();
+
+            playerEntry = new();
+
+            if (quickOwnHighScoreReader.HasRows)
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("quick_ranking_league"),
+                    rankingScore = Convert.ToUInt64("quick_ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("quick_ranking_league"),
+                    maxScore = Convert.ToUInt64("quick_high_score")
+                };
+
+                playerEntry = leaderboardEntry;
+            }
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode GetEndlessLeagueHighScores(MySqlConnection conn, string uid)
+        public static SRStatusCode GetEndlessLeagueHighScores(MySqlConnection conn, string uid, long lbtype, long leagueId, long leagueGroup, out LeaderboardEntry playerEntry, out long endlessEntryCount, out LeaderboardEntry[] endlessLeaderboardEntries)
         {
             PlayerState playerState = new();
             var populateStatus = playerState.Populate(conn, uid);
-            if (populateStatus != SRStatusCode.Ok)
-            {
-                return populateStatus;
-            }
 
-            var endlessLeagueHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY league_high_score DESC");
+            var endlessLeagueHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY league_high_score DESC WHERE ranking_league = '{0}', ranking_league_group_id = '{1}'", leagueId, leagueGroup);
             var endlessLeagueHighScoresCommand = new MySqlCommand(endlessLeagueHighScoresSql, conn);
-            endlessLeagueHighScoresCommand.ExecuteNonQuery();
+            var endlessLeagueHighScoresReader = endlessLeagueHighScoresCommand.ExecuteReader();
+
+            List<LeaderboardEntry> leaderboardEntryList = new List<LeaderboardEntry>();
+
+            while (endlessLeagueHighScoresReader.Read())
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("ranking_league"),
+                    rankingScore = Convert.ToUInt64("ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("ranking_league"),
+                    maxScore = Convert.ToUInt64("league_high_score")
+                };
+
+                leaderboardEntryList.Add(leaderboardEntry);
+            }
+
+            endlessLeaderboardEntries = leaderboardEntryList.ToArray();
+
+            endlessEntryCount = endlessLeaderboardEntries.Count();
+
+            var endlessOwnHighLeagueScoreSql = Db.GetCommand("SELECT * FROM `sw_players` WHERE id='{0}'", uid);
+            var endlessOwnHighLeagueScoreCommand = new MySqlCommand(endlessOwnHighLeagueScoreSql, conn);
+            var endlessOwnHighLeagueScoreReader = endlessOwnHighLeagueScoreCommand.ExecuteReader();
+
+            playerEntry = new();
+
+            if (endlessOwnHighLeagueScoreReader.HasRows)
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("ranking_league"),
+                    rankingScore = Convert.ToUInt64("ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("ranking_league"),
+                    maxScore = Convert.ToUInt64("league_high_score")
+                };
+
+                playerEntry = leaderboardEntry;
+            }
 
             return SRStatusCode.Ok;
         }
-        public static SRStatusCode GetQuickLeagueHighScores(MySqlConnection conn, string uid)
+        public static SRStatusCode GetQuickLeagueHighScores(MySqlConnection conn, string uid, long lbtype, long leagueId, long leagueGroup, out LeaderboardEntry playerEntry, out long quickEntryCount, out LeaderboardEntry[] quickLeaderboardEntries)
         {
             PlayerState playerState = new();
             var populateStatus = playerState.Populate(conn, uid);
-            if (populateStatus != SRStatusCode.Ok)
-            {
-                return populateStatus;
-            }
 
             var quickLeagueHighScoresSql = Db.GetCommand("SELECT * FROM `sw_players` ORDER BY quick_league_high_score DESC");
             var quickLeagueHighScoresCommand = new MySqlCommand(quickLeagueHighScoresSql, conn);
-            quickLeagueHighScoresCommand.ExecuteNonQuery();
+            var quickLeagueHighScoresReader = quickLeagueHighScoresCommand.ExecuteReader();
+
+            List<LeaderboardEntry> leaderboardEntryList = new List<LeaderboardEntry>();
+
+            while (quickLeagueHighScoresReader.Read())
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("quick_ranking_league"),
+                    rankingScore = Convert.ToUInt64("quick_ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("quick_ranking_league"),
+                    maxScore = Convert.ToUInt64("quick_league_high_score")
+                };
+
+                leaderboardEntryList.Add(leaderboardEntry);
+            }
+
+            quickLeaderboardEntries = leaderboardEntryList.ToArray();
+            quickEntryCount = quickLeaderboardEntries.Count();
+
+            var quickOwnHighLeagueScoreSql = Db.GetCommand("SELECT * FROM `sw_players` WHERE id='{0}'", uid);
+            var quickOwnHighLeagueScoreCommand = new MySqlCommand(quickOwnHighLeagueScoreSql, conn);
+            var quickOwnHighLeagueScoreReader = quickOwnHighLeagueScoreCommand.ExecuteReader();
+
+            playerEntry = new();
+
+            if (quickOwnHighLeagueScoreReader.HasRows)
+            {
+                LeaderboardEntry leaderboardEntry = new()
+                {
+                    friendId = Convert.ToString("id"),
+                    name = Convert.ToString("username"),
+                    grade = Convert.ToInt64("quick_ranking_league"),
+                    rankingScore = Convert.ToUInt64("quick_ranking_league_group"),
+                    numRank = Convert.ToInt64("num_rank"),
+                    loginTime = Convert.ToInt64("last_login"),
+                    charaId = Convert.ToString("main_chara_id"),
+                    subCharaId = Convert.ToString("sub_chara_id"),
+                    mainChaoId = Convert.ToString("main_chao_id"),
+                    subChaoId = Convert.ToString("sub_chao_id"),
+                    language = Convert.ToInt32("language"),
+                    league = Convert.ToInt64("quick_ranking_league"),
+                    maxScore = Convert.ToUInt64("quick_league_high_score")
+                };
+
+                playerEntry = leaderboardEntry;
+            }
 
             return SRStatusCode.Ok;
         }
