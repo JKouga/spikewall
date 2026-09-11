@@ -518,7 +518,7 @@ namespace spikewall.Object
             if (DateTime.Now >= leagueReset)
             {
                 LeagueData endlessLeague = new();
-                var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, uid, out LeagueData[] endlessLeagueList);
+                var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, uid, out LeagueData currentEndlessLeague, out LeagueData[] endlessLeagueList);
                 if (generateEndlessLeagueStatus != SRStatusCode.Ok)
                 {
                     return generateEndlessLeagueStatus;
@@ -591,7 +591,7 @@ namespace spikewall.Object
             if (DateTime.Now >= leagueReset)
             {
                 LeagueData quickLeague = new();
-                var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, uid, out LeagueData[] quickLeagueList);
+                var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, uid, out LeagueData currentQuickLeague, out LeagueData[] quickLeagueList);
                 if (generateQuickLeagueStatus != SRStatusCode.Ok)
                 {
                     return generateQuickLeagueStatus;
