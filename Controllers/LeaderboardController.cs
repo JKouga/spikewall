@@ -256,7 +256,7 @@ namespace spikewall.Controllers
             else
             {
                 LeagueData.GenerateQuickLeagueDataList(conn, clientReq.userId, out LeagueData[] quickLeague);
-                leagueOperatorDataResponse.LeagueID = Convert.ToInt64(quickLeague[(int)playerState.rankingLeague]);
+                leagueOperatorDataResponse.LeagueID = Convert.ToInt64(quickLeague[(int)playerState.quickRankingLeague]);
                 leagueOperatorDataResponse.LeagueList = quickLeague;
             }
 
