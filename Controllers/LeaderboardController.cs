@@ -7,7 +7,6 @@ using spikewall.Request;
 using spikewall.Response;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using static spikewall.Object.LeagueData;
 
 namespace spikewall.Controllers
 {
@@ -48,7 +47,7 @@ namespace spikewall.Controllers
                 rankingLeaguegroup = playerState.quickRankingLeagueGroup;
             }
 
-            var startResetStatus = GetStartAndEndTimesForEndlessLeague(conn, (long)rankingLeague, (long)rankingLeaguegroup, out long startTime, out long resetTime);
+            var startResetStatus = LeagueData.GetStartAndEndTimesForEndlessLeague(conn, (long)rankingLeague, (long)rankingLeaguegroup, out long startTime, out long resetTime);
             if (startResetStatus != SRStatusCode.Ok)
             {
                 return new JsonResult(EncryptedResponse.Generate(iv, startResetStatus));
