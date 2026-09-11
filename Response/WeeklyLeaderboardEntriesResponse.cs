@@ -18,18 +18,5 @@ namespace spikewall.Response
 
         // FIXME: This is an array but shouldn't actually be strings, set up "LeaderboardEntry" object
         public LeaderboardEntry[]? entriesList { get; set; }
-
-        public WeeklyLeaderboardEntriesResponse()
-        {
-            Player player = new();
-            this.playerEntry = new LeaderboardEntry();
-            this.lastOffset = 0;
-            this.startTime = 0;
-            this.resetTime = 0;
-            this.startIndex = 0;
-            this.mode = 0;
-            this.totalEntries = 0;
-            this.entriesList = Array.Empty<LeaderboardEntry>();
-        }
     }
 }

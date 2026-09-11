@@ -10,14 +10,5 @@
         public long? param { get; set; }
         public long? startTime { get; set; }
         public long? resetTime { get; set; }
-
-        public WeeklyLeaderboardOptionsResponse()
-        {
-            this.mode = 0;
-            this.type = 0;
-            this.param = 0;
-            this.startTime = 0;
-            this.resetTime = 0;
-        }
     }
 }

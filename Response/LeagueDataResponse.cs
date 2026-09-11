@@ -9,11 +9,5 @@ namespace spikewall.Response
     {
         public LeagueData leagueData { get; set; }
         public long mode { get; set; }
-
-        public LeagueDataResponse()
-        {
-            this.leagueData = new LeagueData();
-            this.mode = 0;
-        }
     }
 }
