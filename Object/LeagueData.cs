@@ -56,9 +56,10 @@ namespace spikewall.Object
             Quick
         }
 
-        public static SRStatusCode GenerateEndlessLeagueData(MySqlConnection conn, out LeagueData[] endlessLeague)
+        public static SRStatusCode GenerateEndlessLeagueData(MySqlConnection conn, string uid, out LeagueData[] endlessLeague)
         {
             List<LeagueData> endlessLeagueDataList = new List<LeagueData>();
+            PlayerState playerState = new();
 
             var generateEndlessLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata`");
             var generateEndlessLeagueDataCmd = new MySqlCommand(generateEndlessLeagueDataSql, conn);
@@ -80,8 +81,10 @@ namespace spikewall.Object
                 {
                     endlessLeagueData.groupId += 1;
                     endlessLeagueData.numGroupMember = 0;
-                    endlessLeagueData.numGroupMember += 1;
                 }
+                endlessLeagueData.numGroupMember += 1;
+                playerState.rankingLeague = endlessLeagueData.leagueId;
+                playerState.rankingLeagueGroupID = endlessLeagueData.groupId;
 
                 endlessLeagueDataList.Add(endlessLeagueData);
             }
@@ -90,12 +93,17 @@ namespace spikewall.Object
 
             endlessLeague = endlessLeagueDataList.ToArray();
 
+            var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET ranking_league = '{0}', ranking_league_group = '{1}' WHERE id= '{2}'", playerState.rankingLeague, playerState.rankingLeagueGroupID, uid);
+            var updatePlayerStateCommand = new MySqlCommand(updatePlayerStateSql, conn);
+            updatePlayerStateCommand.ExecuteNonQuery();
+
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode GenerateQuickLeagueData(MySqlConnection conn, out LeagueData[] quickLeague)
+        public static SRStatusCode GenerateQuickLeagueData(MySqlConnection conn, string uid, out LeagueData[] quickLeague)
         {
             List<LeagueData> quickLeagueDataList = new List<LeagueData>();
+            PlayerState playerState = new();
 
             var generateQuickLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguedata`");
             var generateQuickLeagueDataCmd = new MySqlCommand(generateQuickLeagueDataSql, conn);
@@ -117,15 +125,21 @@ namespace spikewall.Object
                 {
                     quickLeagueData.groupId += 1;
                     quickLeagueData.numGroupMember = 0;
-                    quickLeagueData.numGroupMember += 1;
                 }
+                quickLeagueData.numGroupMember += 1;
 
                 quickLeagueDataList.Add(quickLeagueData);
-            }
 
+                playerState.quickRankingLeague = quickLeagueData.leagueId;
+                playerState.quickRankingLeagueGroupID = quickLeagueData.groupId;
+            }
             generateQuickLeagueDataReader.Close();
 
             quickLeague = quickLeagueDataList.ToArray();
+
+            var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET quick_ranking_league = '{0}', quick_ranking_league_group = '{1}' WHERE id= '{2}'", playerState.quickRankingLeague, playerState.quickRankingLeagueGroupID, uid);
+            var updatePlayerStateCommand = new MySqlCommand(updatePlayerStateSql, conn);
+            updatePlayerStateCommand.ExecuteNonQuery();
 
             return SRStatusCode.Ok;
         }
@@ -148,7 +162,7 @@ namespace spikewall.Object
             if (DateTime.Now >= leagueReset)
             {
                 LeagueData endlessLeague = new();
-                var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, out LeagueData[] endlessLeagueList);
+                var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, uid, out LeagueData[] endlessLeagueList);
                 if (generateEndlessLeagueStatus != SRStatusCode.Ok)
                 {
                     return generateEndlessLeagueStatus;
@@ -221,7 +235,7 @@ namespace spikewall.Object
             if (DateTime.Now >= leagueReset)
             {
                 LeagueData quickLeague = new();
-                var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, out LeagueData[] quickLeagueList);
+                var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, uid, out LeagueData[] quickLeagueList);
                 if (generateQuickLeagueStatus != SRStatusCode.Ok)
                 {
                     return generateQuickLeagueStatus;
