@@ -78,9 +78,107 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
 
-            // FIXME: Stub
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, clientReq.userId);
+            if (populateStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
+            }
 
-            return new JsonResult(EncryptedResponse.Generate(iv, new WeeklyLeaderboardEntriesResponse()));
+            LeaderboardEntriesRequest leaderboardEntriesRequest = new();
+            WeeklyLeaderboardEntriesResponse weeklyLeaderboardEntriesResponse = new();
+
+            var rankingLeague = playerState.rankingLeague;
+            var rankingLeagueGroup = playerState.rankingLeagueGroup;
+
+            if (leaderboardEntriesRequest.Mode == 1)
+            {
+                rankingLeague = playerState.quickRankingLeague;
+                rankingLeagueGroup = playerState.quickRankingLeagueGroup;
+            }
+
+            var startResetStatus = LeagueData.GetStartAndEndTimesForEndlessLeague(conn, (long)rankingLeague, (long)rankingLeagueGroup, out long startTime, out long resetTime);
+            if (startResetStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, startResetStatus));
+            }
+
+            if (leaderboardEntriesRequest.Type == 4 || leaderboardEntriesRequest.Type == 5)
+            {
+                if (leaderboardEntriesRequest.Mode == 1)
+                {
+                    rankingLeague = playerState.quickRankingLeague;
+                    rankingLeagueGroup = playerState.quickRankingLeagueGroup;
+                    var quickEntryListStatus = LeagueData.GetQuickLeagueHighScores(conn, clientReq.userId, leaderboardEntriesRequest.Type, (long)rankingLeague, (long)rankingLeagueGroup, out LeaderboardEntry playerEntry, out long quickEntryCount, out LeaderboardEntry[] quickLeaderboardEntries);
+                    if (quickEntryListStatus != SRStatusCode.Ok)
+                    {
+                        return new JsonResult(EncryptedResponse.Generate(iv, quickEntryListStatus));
+                    }
+
+                    weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
+                    weeklyLeaderboardEntriesResponse.startTime = startTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
+                    weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
+                    weeklyLeaderboardEntriesResponse.totalEntries = quickEntryCount;
+                    weeklyLeaderboardEntriesResponse.entriesList = quickLeaderboardEntries;
+                }
+                else
+                {
+                    rankingLeague = playerState.rankingLeague;
+                    rankingLeagueGroup = playerState.rankingLeagueGroup;
+                    var endlessEntryListStatus = LeagueData.GetEndlessLeagueHighScores(conn, clientReq.userId, leaderboardEntriesRequest.Type, (long)rankingLeague, (long)rankingLeagueGroup, out LeaderboardEntry playerEntry, out long endlessEntryCount, out LeaderboardEntry[] endlessLeaderboardEntries);
+
+                    if (endlessEntryListStatus != SRStatusCode.Ok)
+                    {
+                        return new JsonResult(EncryptedResponse.Generate(iv, endlessEntryListStatus));
+                    }
+
+                    weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
+                    weeklyLeaderboardEntriesResponse.startTime = startTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
+                    weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
+                    weeklyLeaderboardEntriesResponse.totalEntries = endlessEntryCount;
+                    weeklyLeaderboardEntriesResponse.entriesList = endlessLeaderboardEntries;
+                }
+            }
+            else if (leaderboardEntriesRequest.Type == 6 || leaderboardEntriesRequest.Type == 7 || DateTimeOffset.Now.ToUnixTimeSeconds() < resetTime && DateTimeOffset.Now.ToUnixTimeSeconds() >= startTime)
+            {
+                if (leaderboardEntriesRequest.Mode == 1)
+                {
+                    var quickLeaderboardStatus = LeagueData.GetQuickHighScores(conn, clientReq.userId, out LeaderboardEntry playerEntry, out LeaderboardEntry[] quickLeaderboard, out long quickLeaderboardPlayers);
+                    if (quickLeaderboardStatus != SRStatusCode.Ok)
+                    {
+                        return new JsonResult(EncryptedResponse.Generate(iv, quickLeaderboardStatus));
+                    }
+
+                    weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
+                    weeklyLeaderboardEntriesResponse.startTime = startTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
+                    weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
+                    weeklyLeaderboardEntriesResponse.totalEntries = quickLeaderboardPlayers;
+                    weeklyLeaderboardEntriesResponse.entriesList = quickLeaderboard;
+                }
+                else
+                {
+                    var endlessLeaderboardStatus = LeagueData.GetEndlessHighScores(conn, clientReq.userId, out LeaderboardEntry playerEntry, out LeaderboardEntry[] endlessLeaderboard, out long endlessLeaderboardPlayers);
+                    if (endlessLeaderboardStatus != SRStatusCode.Ok)
+                    {
+                        return new JsonResult(EncryptedResponse.Generate(iv, endlessLeaderboardStatus));
+                    }
+
+                    weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
+                    weeklyLeaderboardEntriesResponse.startTime = startTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
+                    weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
+                    weeklyLeaderboardEntriesResponse.totalEntries = endlessLeaderboardPlayers;
+                    weeklyLeaderboardEntriesResponse.entriesList = endlessLeaderboard;
+                }
+            }
+            return new JsonResult(EncryptedResponse.Generate(iv, weeklyLeaderboardEntriesResponse));
         }
 
         [HttpPost]
