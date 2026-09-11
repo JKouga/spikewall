@@ -6,11 +6,5 @@ namespace spikewall.Response
     {
         public LeagueData[] LeagueList;
         public long LeagueID;
-
-        public LeagueOperatorDataResponse()
-        {
-            LeagueList = new LeagueData[21];
-            LeagueID = LeagueID;
-        }
     }
 }
