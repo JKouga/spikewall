@@ -208,13 +208,13 @@ namespace spikewall.Controllers
 
             if (leaderboardRequest.Mode == 0)
             {
-                LeagueData.GenerateEndlessLeagueData(conn, clientReq.userId, out LeagueData currentEndlessLeague, out LeagueData[] endlessLeague);
+                LeagueData.GenerateEndlessLeagueData(conn, clientReq.userId, out LeagueData currentEndlessLeague);
                 leagueDataResponse.mode = leaderboardRequest.Mode;
                 leagueDataResponse.leagueData = currentEndlessLeague;
             }
             else
             {
-                LeagueData.GenerateQuickLeagueData(conn, clientReq.userId, out LeagueData currentQuickLeague, out LeagueData[] quickLeague);
+                LeagueData.GenerateQuickLeagueData(conn, clientReq.userId, out LeagueData currentQuickLeague);
                 leagueDataResponse.mode = leaderboardRequest.Mode;
                 leagueDataResponse.leagueData = currentQuickLeague;
             }
@@ -225,6 +225,48 @@ namespace spikewall.Controllers
         [Route("getLeagueOperatorData")]
         [Produces("text/json")]
         public JsonResult GetLeagueOperatorData([FromForm] string param, [FromForm] string secure, [FromForm] string key = "")
+        {
+            var iv = (string)Config.Get("encryption_iv");
+
+            using var conn = Db.Get();
+            conn.Open();
+
+            var clientReq = new ClientRequest<BaseRequest>(conn, param, secure, key);
+            if (clientReq.error != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
+            }
+
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, clientReq.userId);
+            if (populateStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
+            }
+
+            LeaderboardRequest leaderboardRequest = new();
+            LeagueOperatorDataResponse leagueOperatorDataResponse = new();
+
+            if (leaderboardRequest.Mode == 0)
+            {
+                LeagueData.GenerateEndlessLeagueDataList(conn, clientReq.userId, out LeagueData[] endlessLeague);
+                leagueOperatorDataResponse.LeagueID = Convert.ToInt64(endlessLeague[(int)playerState.rankingLeague]);
+                leagueOperatorDataResponse.LeagueList = endlessLeague;
+            }
+            else
+            {
+                LeagueData.GenerateQuickLeagueDataList(conn, clientReq.userId, out LeagueData[] quickLeague);
+                leagueOperatorDataResponse.LeagueID = Convert.ToInt64(quickLeague[(int)playerState.rankingLeague]);
+                leagueOperatorDataResponse.LeagueList = quickLeague;
+            }
+
+            return new JsonResult(EncryptedResponse.Generate(iv, leagueOperatorDataResponse));
+        }
+
+        [HttpPost]
+        [Route("calculateAndResetLeague")]
+        [Produces("text/json")]
+        public JsonResult CalculateAndResetLeague([FromForm] string param, [FromForm] string secure, [FromForm] string key = "")
         {
             var iv = (string)Config.Get("encryption_iv");
 

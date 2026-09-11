@@ -56,7 +56,57 @@ namespace spikewall.Object
             Quick
         }
 
-        public static SRStatusCode GenerateEndlessLeagueData(MySqlConnection conn, string uid, out LeagueData currentEndlessLeague, out LeagueData[] endlessLeague)
+        public static SRStatusCode GenerateEndlessLeagueData(MySqlConnection conn, string uid, out LeagueData currentEndlessLeague)
+        {
+            PlayerState playerState = new();
+
+            var generateCurrentEndlessLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata` WHERE league_id = '{0}'", playerState.rankingLeague);
+            var generateCurrentEndlessLeagueDataCmd = new MySqlCommand(generateCurrentEndlessLeagueDataSql, conn);
+            var generateCurrentEndlessLeagueDataReader = generateCurrentEndlessLeagueDataCmd.ExecuteReader();
+
+            currentEndlessLeague = new();
+
+            if (generateCurrentEndlessLeagueDataReader.HasRows)
+            {
+                currentEndlessLeague.leagueId = Convert.ToInt64(generateCurrentEndlessLeagueDataReader["league_id"]);
+                currentEndlessLeague.groupId = Convert.ToInt64(generateCurrentEndlessLeagueDataReader["group_id"]);
+                currentEndlessLeague.numUp = Convert.ToInt64(generateCurrentEndlessLeagueDataReader["num_up"]);
+                currentEndlessLeague.numDown = Convert.ToInt64(generateCurrentEndlessLeagueDataReader["num_down"]);
+                currentEndlessLeague.numGroupMember = Convert.ToInt64(generateCurrentEndlessLeagueDataReader["num_in_group"]);
+                currentEndlessLeague.numLeagueMember = Convert.ToInt64(generateCurrentEndlessLeagueDataReader["num_in_league"]);
+                currentEndlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, currentEndlessLeague.leagueId);
+                currentEndlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, currentEndlessLeague.leagueId);
+            }
+
+            return SRStatusCode.Ok;
+        }
+
+        public static SRStatusCode GenerateQuickLeagueData(MySqlConnection conn, string uid, out LeagueData currentQuickLeague)
+        {
+            PlayerState playerState = new();
+
+            var generateCurrentQuickLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata` WHERE league_id = '{0}'", playerState.quickRankingLeague);
+            var generateCurrentQuickLeagueDataCmd = new MySqlCommand(generateCurrentQuickLeagueDataSql, conn);
+            var generateCurrentQuickLeagueDataReader = generateCurrentQuickLeagueDataCmd.ExecuteReader();
+
+            currentQuickLeague = new();
+
+            if (generateCurrentQuickLeagueDataReader.HasRows)
+            {
+                currentQuickLeague.leagueId = Convert.ToInt64(generateCurrentQuickLeagueDataReader["league_id"]);
+                currentQuickLeague.groupId = Convert.ToInt64(generateCurrentQuickLeagueDataReader["group_id"]);
+                currentQuickLeague.numUp = Convert.ToInt64(generateCurrentQuickLeagueDataReader["num_up"]);
+                currentQuickLeague.numDown = Convert.ToInt64(generateCurrentQuickLeagueDataReader["num_down"]);
+                currentQuickLeague.numGroupMember = Convert.ToInt64(generateCurrentQuickLeagueDataReader["num_in_group"]);
+                currentQuickLeague.numLeagueMember = Convert.ToInt64(generateCurrentQuickLeagueDataReader["num_in_league"]);
+                currentQuickLeague.highScoreOpe = OperatorScore.GenerateQuickLeagueHighScorePrizes(conn, currentQuickLeague.leagueId);
+                currentQuickLeague.highScoreOpe = OperatorScore.GenerateQuickLeagueTotalScorePrizes(conn, currentQuickLeague.leagueId);
+            }
+
+            return SRStatusCode.Ok;
+        }
+
+        public static SRStatusCode GenerateEndlessLeagueDataList(MySqlConnection conn, string uid, out LeagueData[] endlessLeague)
         {
             List<LeagueData> endlessLeagueDataList = new List<LeagueData>();
             PlayerState playerState = new();
@@ -93,33 +143,11 @@ namespace spikewall.Object
             generateEndlessLeagueDataReader.Close();
 
             endlessLeague = endlessLeagueDataList.ToArray();
-
-            var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET ranking_league = '{0}', ranking_league_group = '{1}' WHERE id= '{2}'", playerState.rankingLeague, playerState.rankingLeagueGroupID, uid);
-            var updatePlayerStateCommand = new MySqlCommand(updatePlayerStateSql, conn);
-            updatePlayerStateCommand.ExecuteNonQuery();
-
-            var generateCurrentEndlessLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata` WHERE league_id = '{0}'", playerState.rankingLeague);
-            var generateCurrentEndlessLeagueDataCmd = new MySqlCommand(generateCurrentEndlessLeagueDataSql, conn);
-            var generateCurrentEndlessLeagueDataReader = generateCurrentEndlessLeagueDataCmd.ExecuteReader();
-
-            currentEndlessLeague = new();
-
-            if (generateCurrentEndlessLeagueDataReader.HasRows)
-            {
-                currentEndlessLeague.leagueId = Convert.ToInt64(generateEndlessLeagueDataReader["league_id"]);
-                currentEndlessLeague.groupId = Convert.ToInt64(generateEndlessLeagueDataReader["group_id"]);
-                currentEndlessLeague.numUp = Convert.ToInt64(generateEndlessLeagueDataReader["num_up"]);
-                currentEndlessLeague.numDown = Convert.ToInt64(generateEndlessLeagueDataReader["num_down"]);
-                currentEndlessLeague.numGroupMember = Convert.ToInt64(generateEndlessLeagueDataReader["num_in_group"]);
-                currentEndlessLeague.numLeagueMember = Convert.ToInt64(generateEndlessLeagueDataReader["num_in_league"]);
-                currentEndlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, currentEndlessLeague.leagueId);
-                currentEndlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, currentEndlessLeague.leagueId);
-            }
-
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode GenerateQuickLeagueData(MySqlConnection conn, string uid, out LeagueData currentQuickLeague, out LeagueData[] quickLeague)
+
+        public static SRStatusCode GenerateQuickLeagueDataList(MySqlConnection conn, string uid, out LeagueData[] quickLeague)
         {
             List<LeagueData> quickLeagueDataList = new List<LeagueData>();
             PlayerState playerState = new();
@@ -155,29 +183,6 @@ namespace spikewall.Object
             generateQuickLeagueDataReader.Close();
 
             quickLeague = quickLeagueDataList.ToArray();
-
-            var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET quick_ranking_league = '{0}', quick_ranking_league_group = '{1}' WHERE id= '{2}'", playerState.quickRankingLeague, playerState.quickRankingLeagueGroupID, uid);
-            var updatePlayerStateCommand = new MySqlCommand(updatePlayerStateSql, conn);
-            updatePlayerStateCommand.ExecuteNonQuery();
-
-            var generateCurrentQuickLeagueDataSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata` WHERE league_id = '{0}'", playerState.quickRankingLeague);
-            var generateCurrentQuickLeagueDataCmd = new MySqlCommand(generateCurrentQuickLeagueDataSql, conn);
-            var generateCurrentQuickLeagueDataReader = generateCurrentQuickLeagueDataCmd.ExecuteReader();
-
-            currentQuickLeague = new();
-
-            if (generateCurrentQuickLeagueDataReader.HasRows)
-            {
-                currentQuickLeague.leagueId = Convert.ToInt64(generateQuickLeagueDataReader["league_id"]);
-                currentQuickLeague.groupId = Convert.ToInt64(generateQuickLeagueDataReader["group_id"]);
-                currentQuickLeague.numUp = Convert.ToInt64(generateQuickLeagueDataReader["num_up"]);
-                currentQuickLeague.numDown = Convert.ToInt64(generateQuickLeagueDataReader["num_down"]);
-                currentQuickLeague.numGroupMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_group"]);
-                currentQuickLeague.numLeagueMember = Convert.ToInt64(generateQuickLeagueDataReader["num_in_league"]);
-                currentQuickLeague.highScoreOpe = OperatorScore.GenerateQuickLeagueHighScorePrizes(conn, currentQuickLeague.leagueId);
-                currentQuickLeague.highScoreOpe = OperatorScore.GenerateQuickLeagueTotalScorePrizes(conn, currentQuickLeague.leagueId);
-            }
-
             return SRStatusCode.Ok;
         }
 
@@ -518,50 +523,32 @@ namespace spikewall.Object
             if (DateTime.Now >= leagueReset)
             {
                 LeagueData endlessLeague = new();
-                var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, uid, out LeagueData currentEndlessLeague, out LeagueData[] endlessLeagueList);
+                var generateEndlessLeagueStatus = GenerateEndlessLeagueData(conn, uid, out LeagueData currentEndlessLeague);
                 if (generateEndlessLeagueStatus != SRStatusCode.Ok)
                 {
                     return generateEndlessLeagueStatus;
                 }
 
-                var endlessLeagueSql = Db.GetCommand(@"SELECT * FROM `sw_endlessleaguedata` WHERE league_id = '{0}'", endlessLeagueList[Convert.ToInt32(endlessLeague.leagueId)]);
-                var endlessLeagueCommand = new MySqlCommand(endlessLeagueSql, conn);
-                var endlessLeagueReader = endlessLeagueCommand.ExecuteReader();
+                var playerSql = Db.GetCommand(@"SELECT * FROM `sw_player` WHERE id='{0}' ORDER BY ranking_league_group, ranking_league_group_id, story_total_score DESC", uid);
+                var playerCommand = new MySqlCommand(playerSql, conn);
+                var playerReader = playerCommand.ExecuteReader();
 
-                if (endlessLeagueReader.HasRows)
+                if (playerReader.HasRows)
                 {
-                    endlessLeague.leagueId = Convert.ToInt64(endlessLeagueReader["league_id"]);
-                    endlessLeague.groupId = Convert.ToInt64(endlessLeagueReader["group_id"]);
-                    endlessLeague.numUp = Convert.ToInt64(endlessLeagueReader["num_up"]);
-                    endlessLeague.numDown = Convert.ToInt64(endlessLeagueReader["num_down"]);
-                    endlessLeague.numGroupMember = Convert.ToInt64(endlessLeagueReader["num_in_group"]);
-                    endlessLeague.numLeagueMember = Convert.ToInt64(endlessLeagueReader["num_in_league"]);
-                    endlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, endlessLeague.leagueId);
-                    endlessLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, endlessLeague.leagueId);
-
-                    var playerSql = Db.GetCommand(@"SELECT * FROM `sw_player` WHERE id='{0}' ORDER BY ranking_league_group, ranking_league_group_id, story_total_score DESC", uid);
-                    var playerCommand = new MySqlCommand(playerSql, conn);
-                    var playerReader = playerCommand.ExecuteReader();
-
-                    if (playerReader.HasRows)
+                    playerState.rankingLeagueGroup = Convert.ToInt64(playerReader["ranking_league_group"]);
+                    playerState.rankingLeague = Convert.ToInt64(playerReader["ranking_league"]);
+                    if (playerState.rankingLeagueGroup <= endlessLeague.numUp)
                     {
-                        playerState.rankingLeagueGroup = Convert.ToInt64(playerReader["ranking_league_group"]);
-                        playerState.rankingLeague = Convert.ToInt64(playerReader["ranking_league"]);
-                        if (playerState.rankingLeagueGroup <= endlessLeague.numUp)
-                        {
-                            endlessLeague.leagueId += 1;
-                        }
-                        else if (endlessLeague.leagueId >= 9 && playerState.rankingLeagueGroup > (endlessLeague.numGroupMember - endlessLeague.numDown))
-                        {
-                            endlessLeague.leagueId -= 1;
-                        }
-                        playerState.rankingLeague = endlessLeague.leagueId;
+                        endlessLeague.leagueId += 1;
                     }
-
-                    playerReader.Close();
+                    else if (endlessLeague.leagueId >= 9 && playerState.rankingLeagueGroup > (endlessLeague.numGroupMember - endlessLeague.numDown))
+                    {
+                        endlessLeague.leagueId -= 1;
+                    }
+                    playerState.rankingLeague = endlessLeague.leagueId;
                 }
 
-                endlessLeagueReader.Close();
+                conn.Close();
             }
 
             var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET ranking_league = '{0}' WHERE id= '{1}'",  playerState.rankingLeague, uid);
@@ -591,50 +578,32 @@ namespace spikewall.Object
             if (DateTime.Now >= leagueReset)
             {
                 LeagueData quickLeague = new();
-                var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, uid, out LeagueData currentQuickLeague, out LeagueData[] quickLeagueList);
+                var generateQuickLeagueStatus = GenerateQuickLeagueData(conn, uid, out LeagueData currentQuickLeague);
                 if (generateQuickLeagueStatus != SRStatusCode.Ok)
                 {
                     return generateQuickLeagueStatus;
                 }
 
-                var quickLeagueSql = Db.GetCommand(@"SELECT * FROM `sw_quickleaguedata` WHERE league_id = '{0}'", quickLeagueList[Convert.ToInt32(quickLeague.leagueId)]);
-                var quickLeagueCommand = new MySqlCommand(quickLeagueSql, conn);
-                var quickLeagueReader = quickLeagueCommand.ExecuteReader();
+                var playerSql = Db.GetCommand(@"SELECT * FROM `sw_player` WHERE id='{0}' ORDER BY quick_ranking_league_group, quick_ranking_league_group_id, quick_total_score DESC", uid);
+                var playerCommand = new MySqlCommand(playerSql, conn);
+                var playerReader = playerCommand.ExecuteReader();
 
-                if (quickLeagueReader.HasRows)
+                if (playerReader.HasRows)
                 {
-                    quickLeague.leagueId = Convert.ToInt64(quickLeagueReader["league_id"]);
-                    quickLeague.groupId = Convert.ToInt64(quickLeagueReader["group_id"]);
-                    quickLeague.numUp = Convert.ToInt64(quickLeagueReader["num_up"]);
-                    quickLeague.numDown = Convert.ToInt64(quickLeagueReader["num_down"]);
-                    quickLeague.numGroupMember = Convert.ToInt64(quickLeagueReader["num_in_group"]);
-                    quickLeague.numLeagueMember = Convert.ToInt64(quickLeagueReader["num_in_league"]);
-                    quickLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueHighScorePrizes(conn, quickLeague.leagueId);
-                    quickLeague.highScoreOpe = OperatorScore.GenerateEndlessLeagueTotalScorePrizes(conn, quickLeague.leagueId);
-
-                    var playerSql = Db.GetCommand(@"SELECT * FROM `sw_player` WHERE id='{0}' ORDER BY quick_ranking_league_group, quick_ranking_league_group_id, quick_total_score DESC", uid);
-                    var playerCommand = new MySqlCommand(playerSql, conn);
-                    var playerReader = playerCommand.ExecuteReader();
-
-                    if (playerReader.HasRows)
+                    playerState.quickRankingLeagueGroup = Convert.ToInt64(playerReader["quick_ranking_league_group"]);
+                    playerState.quickRankingLeague = Convert.ToInt64(playerReader["quick_ranking_league"]);
+                    if (playerState.quickRankingLeagueGroup <= quickLeague.numUp)
                     {
-                        playerState.quickRankingLeagueGroup = Convert.ToInt64(playerReader["quick_ranking_league_group"]);
-                        playerState.quickRankingLeague = Convert.ToInt64(playerReader["quick_ranking_league"]);
-                        if (playerState.quickRankingLeagueGroup <= quickLeague.numUp)
-                        {
-                            quickLeague.leagueId += 1;
-                        }
-                        else if (quickLeague.leagueId >= 9 && playerState.quickRankingLeagueGroup > (quickLeague.numGroupMember - quickLeague.numDown))
-                        {
-                            quickLeague.leagueId -= 1;
-                        }
-                        playerState.quickRankingLeague = quickLeague.leagueId;
+                        quickLeague.leagueId += 1;
                     }
-
-                    playerReader.Close();
+                    else if (quickLeague.leagueId >= 9 && playerState.quickRankingLeagueGroup > (quickLeague.numGroupMember - quickLeague.numDown))
+                    {
+                        quickLeague.leagueId -= 1;
+                    }
+                    playerState.quickRankingLeague = quickLeague.leagueId;
                 }
 
-                quickLeagueReader.Close();
+                conn.Close();
             }
 
             var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET quick_ranking_league = '{0}' WHERE id= '{1}'", playerState.quickRankingLeague, uid);
