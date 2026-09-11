@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySqlConnector;
 using spikewall.Debug;
 using spikewall.Encryption;
+using spikewall.Object;
 using spikewall.Request;
 using spikewall.Response;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using static spikewall.Object.LeagueData;
 
 namespace spikewall.Controllers
 {
@@ -20,14 +25,43 @@ namespace spikewall.Controllers
             using var conn = Db.Get();
             conn.Open();
 
-            var clientReq = new ClientRequest<BaseRequest>(conn, param, secure, key);
+            var clientReq = new ClientRequest<LeaderboardRequest>(conn, param, secure, key);
             if (clientReq.error != SRStatusCode.Ok) {
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
 
-            // FIXME: Stub
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, clientReq.userId);
+            if (populateStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
+            }
 
-            return new JsonResult(EncryptedResponse.Generate(iv, new WeeklyLeaderboardOptionsResponse()));
+            LeaderboardRequest leaderboardRequest = new();
+
+            var rankingLeague = playerState.rankingLeague;
+            var rankingLeaguegroup = playerState.rankingLeagueGroup;
+
+            if (leaderboardRequest.Mode == 1)
+            {
+                rankingLeague = playerState.quickRankingLeague;
+                rankingLeaguegroup = playerState.quickRankingLeagueGroup;
+            }
+
+            var startResetStatus = GetStartAndEndTimesForEndlessLeague(conn, (long)rankingLeague, (long)rankingLeaguegroup, out long startTime, out long resetTime);
+            if (startResetStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, startResetStatus));
+            }
+
+            WeeklyLeaderboardOptionsResponse weeklyLeaderboardOptionsResponse = new()
+            {
+                mode = leaderboardRequest.Mode,
+                startTime = startTime,
+                resetTime = resetTime
+            };
+
+            return new JsonResult(EncryptedResponse.Generate(iv, weeklyLeaderboardOptionsResponse));
         }
 
         [HttpPost]
