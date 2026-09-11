@@ -196,9 +196,29 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
             }
 
-            // FIXME: Stub
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, clientReq.userId);
+            if (populateStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
+            }
 
-            return new JsonResult(EncryptedResponse.Generate(iv, new BaseResponse()));
+            LeaderboardRequest leaderboardRequest = new();
+            LeagueDataResponse leagueDataResponse = new();
+
+            if (leaderboardRequest.Mode == 0)
+            {
+                LeagueData.GenerateEndlessLeagueData(conn, clientReq.userId, out LeagueData currentEndlessLeague, out LeagueData[] endlessLeague);
+                leagueDataResponse.mode = leaderboardRequest.Mode;
+                leagueDataResponse.leagueData = currentEndlessLeague;
+            }
+            else
+            {
+                LeagueData.GenerateQuickLeagueData(conn, clientReq.userId, out LeagueData currentQuickLeague, out LeagueData[] quickLeague);
+                leagueDataResponse.mode = leaderboardRequest.Mode;
+                leagueDataResponse.leagueData = currentQuickLeague;
+            }
+            return new JsonResult(EncryptedResponse.Generate(iv, leagueDataResponse));
         }
 
         [HttpPost]
