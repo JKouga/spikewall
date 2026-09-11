@@ -144,6 +144,24 @@ namespace spikewall.Object
             return SRStatusCode.Ok;
         }
 
+        public static SRStatusCode GetStartAndEndTimesForEndlessLeague(MySqlConnection conn, long leagueId, long groupId, out long startTime, out long resetTime)
+        {
+            startTime = 0;
+            resetTime = 0;
+
+            var endlessLeagueTimesSql = Db.GetCommand(@"SELECT start_time, end_time FROM `sw_endlessleaguedata WHERE league_id = '{0}' AND group_id = '{1}'", leagueId, groupId);
+            var endlessLeagueTimesCommand = new MySqlCommand(endlessLeagueTimesSql, conn);
+            var endlessLeagueTimesReader = endlessLeagueTimesCommand.ExecuteReader();
+
+            if (endlessLeagueTimesReader.HasRows)
+            {
+                startTime = Convert.ToInt64("start_time");
+                resetTime = Convert.ToInt64("end_time");
+            }
+            conn.Close();
+            return SRStatusCode.Ok;
+        }
+
         public static SRStatusCode GetEndlessHighScores(MySqlConnection conn, string uid)
         {
             PlayerState playerState = new();
