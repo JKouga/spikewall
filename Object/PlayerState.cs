@@ -64,6 +64,14 @@ namespace spikewall.Object
                 return SRStatusCode.MissingPlayer;
             }
 
+            //Count to see if there are 50 players in an F 1-star Endless Runners League Group
+            var playerF1StarEndlessLeagueGroupCountSql = Db.GetCommand(@"SELECT COUNT(id) FROM `sw_players` WHERE ranking_league = '{0}' AND ranking_league_group = '{1}", LeagueData.LeagueID.F1, this.rankingLeagueGroup);
+            var playerF1StarEndlessLeagueGroupCount = Convert.ToInt64(playerF1StarEndlessLeagueGroupCountSql);
+
+            //Count to see if there are 50 players in an F 1-star Quick Runners League Group
+            var playerF1StarQuickLeagueGroupCountSql = Db.GetCommand(@"SELECT COUNT(id) FROM `sw_players` WHERE ranking_league = '{0}' AND ranking_league_group = '{1}", LeagueData.LeagueID.F1, this.quickRankingLeagueGroup);
+            var playerF1StarQuickLeagueGroupCount = Convert.ToInt64(playerF1StarQuickLeagueGroupCountSql);
+
             // FIXME: I strongly suspect some of these can be calculated rather than manual cells
             //        in this table so expect these to change.
             reader.Read();
@@ -105,8 +113,8 @@ namespace spikewall.Object
             this.quickLeagueHighScore = reader.GetUInt64("quick_league_high_score");
             this.leagueStartTime = reader.GetInt64("league_start_time");
             this.leagueResetTime = reader.GetInt64("league_reset_time");
-            this.rankingLeagueGroup = reader.GetInt64("ranking_league_group");
-            this.quickRankingLeagueGroup = reader.GetInt64("quick_ranking_league_group");
+            var rankingLeagueGroup = reader.GetInt64("ranking_league_group");
+            var quickRankingLeagueGroup = reader.GetInt64("quick_ranking_league_group");
             this.totalScore = reader.GetUInt64("story_total_score");
             this.quickTotalScore = reader.GetUInt64("quick_total_score");
             this.highTotalScore = reader.GetUInt64("highest_story_total_score");
@@ -118,6 +126,19 @@ namespace spikewall.Object
             } else {
                 this.equipItemList = Db.ConvertDBListToIntArray(equipItemList);
             }
+
+            if (this.rankingLeague == 0 && playerF1StarEndlessLeagueGroupCount == 50)
+            {
+                rankingLeagueGroup += 1;
+            }
+
+            if (this.quickRankingLeague == 0 && playerF1StarQuickLeagueGroupCount == 50)
+            {
+                quickRankingLeagueGroup += 1;
+            }
+
+            this.rankingLeagueGroup = rankingLeagueGroup;
+            this.quickRankingLeagueGroup = quickRankingLeagueGroup;
 
             reader.Close();
 
