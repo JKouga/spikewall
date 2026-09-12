@@ -58,8 +58,6 @@ CREATE TABLE
         quick_league_high_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
         league_start_time BIGINT NOT NULL,
         league_reset_time BIGINT NOT NULL,
-        ranking_league_group_id BIGINT NOT NULL DEFAULT 0,
-        quick_ranking_league_group_id BIGINT NOT NULL DEFAULT 0,
         ranking_league_group BIGINT NOT NULL DEFAULT 0,
         quick_ranking_league_group BIGINT NOT NULL DEFAULT 0,
         story_total_score BIGINT UNSIGNED NOT NULL DEFAULT 0,
