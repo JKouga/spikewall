@@ -749,7 +749,7 @@ namespace spikewall.Object
             if (countLeaguePlayersInGroup == currentQuickLeague.numGroupMember)
             {
                 currentQuickLeague.groupId += 1;
-                var updatecurrentQuickLeagueSql = Db.GetCommand(@"UPDATE `sw_endlessleaguedata` SET group_id = '{0}' WHERE league_id = '{1}'", currentQuickLeague.groupId, currentQuickLeague.leagueId);
+                var updatecurrentQuickLeagueSql = Db.GetCommand(@"UPDATE `sw_quickleaguedata` SET group_id = '{0}' WHERE league_id = '{1}'", currentQuickLeague.groupId, currentQuickLeague.leagueId);
                 var updatecurrentQuickLeagueCommand = new MySqlCommand(updatecurrentQuickLeagueSql, conn);
                 updatecurrentQuickLeagueCommand.ExecuteNonQuery();
             }
