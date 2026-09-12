@@ -20,13 +20,13 @@ It is designed to be as accurate as possible to the original server with little 
 ## Implemented, but Needs Testing
 - Roulette
 - Jackpot System
+- Leaderboards
+- Runners League
 
 ## In Progress
 - Daily Challenge
 - Event support
 - Login Bonus
-- Leaderboards
-- Runners League
 - Daily Battles
 
 ## To Do
