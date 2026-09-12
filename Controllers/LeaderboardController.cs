@@ -286,7 +286,8 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
             }
 
-            LeaderboardEntriesRequest leaderboardEntriesRequest = new();
+            LeaderboardRequest leaderboardRequest = new();
+            LeagueDataResponse leagueDataResponse = new();
 
             var getCalculateEndlessRunnersLeagueStatus = LeagueData.CalculateEndlessRunnersLeague(conn, clientReq.userId);
             if (getCalculateEndlessRunnersLeagueStatus != SRStatusCode.Ok)
@@ -306,9 +307,19 @@ namespace spikewall.Controllers
                 return new JsonResult(EncryptedResponse.Generate(iv, getClearScoresStatus));
             }
 
-            // FIXME: Stub
-
-            return new JsonResult(EncryptedResponse.Generate(iv, new BaseResponse()));
+            if (leaderboardRequest.Mode == 0)
+            {
+                LeagueData.GenerateEndlessLeagueData(conn, clientReq.userId, out LeagueData currentEndlessLeague);
+                leagueDataResponse.mode = leaderboardRequest.Mode;
+                leagueDataResponse.leagueData = currentEndlessLeague;
+            }
+            else
+            {
+                LeagueData.GenerateQuickLeagueData(conn, clientReq.userId, out LeagueData currentQuickLeague);
+                leagueDataResponse.mode = leaderboardRequest.Mode;
+                leagueDataResponse.leagueData = currentQuickLeague;
+            }
+            return new JsonResult(EncryptedResponse.Generate(iv, leagueDataResponse));
         }
     }
 }
