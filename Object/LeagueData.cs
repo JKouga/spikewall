@@ -80,6 +80,8 @@ namespace spikewall.Object
 
             conn.Close();
 
+            SaveEndlessLeagueData(conn, uid, ref currentEndlessLeague);
+
             return SRStatusCode.Ok;
         }
 
@@ -105,10 +107,39 @@ namespace spikewall.Object
                 currentQuickLeague.highScoreOpe = OperatorScore.GenerateQuickLeagueTotalScorePrizes(conn, currentQuickLeague.leagueId);
             }
 
-            generateCurrentQuickLeagueDataReader.Close();
-
             conn.Close();
 
+            SaveQuickLeagueData(conn, uid, ref currentQuickLeague);
+
+            return SRStatusCode.Ok;
+        }
+
+        public static SRStatusCode SaveEndlessLeagueData(MySqlConnection conn, string uid, ref LeagueData currentEndlessLeague)
+        {
+            GetStartAndEndTimesForEndlessLeague(conn, (long)currentEndlessLeague.leagueId, (long)currentEndlessLeague.groupId, out long endlessStartTime, out long endlessResetTime);
+
+            var endlessLeagueDataSql = Db.GetCommand(@"UPDATE `sw_endlessleaguedata` SET league_id = '{0}', start_time = '{1}', end_time = '{2}', group_id = '{3}', num_up = '{4}', num_down = '{5}', num_in_group = '{6}', num_in_league = '{7}' WHERE id = '{8}'", currentEndlessLeague.leagueId, currentEndlessLeague.groupId, endlessStartTime, endlessResetTime, currentEndlessLeague.numUp, currentEndlessLeague.numDown, currentEndlessLeague.numGroupMember, currentEndlessLeague.numLeagueMember, uid);
+            var endlessLeagueDataCommand = new MySqlCommand(endlessLeagueDataSql, conn);
+
+            int rowsAffected = endlessLeagueDataCommand.ExecuteNonQuery();
+            if (rowsAffected == 0)
+            {
+                return SRStatusCode.DataMismatch;
+            }
+            return SRStatusCode.Ok;
+        }
+        public static SRStatusCode SaveQuickLeagueData(MySqlConnection conn, string uid, ref LeagueData currentQuickLeague)
+        {
+
+            GetStartAndEndTimesForQuickLeague(conn, (long)currentQuickLeague.leagueId, (long)currentQuickLeague.groupId, out long quickStartTime, out long quickResetTime);
+            var quickLeagueDataSql = Db.GetCommand(@"UPDATE `sw_endlessleaguedata` SET league_id = '{0}', start_time = '{1}', end_time = '{2}', group_id = '{3}', num_up = '{4}', num_down = '{5}', num_in_group = '{6}', num_in_league = '{7}' WHERE id = '{8}''", currentQuickLeague.leagueId, currentQuickLeague.groupId, quickStartTime, quickResetTime, currentQuickLeague.numUp, currentQuickLeague.numDown, currentQuickLeague.numGroupMember, currentQuickLeague.numLeagueMember, uid);
+            var quickLeagueDataCommand = new MySqlCommand(quickLeagueDataSql, conn);
+
+            int rowsAffected = quickLeagueDataCommand.ExecuteNonQuery();
+            if (rowsAffected == 0)
+            {
+                return SRStatusCode.DataMismatch;
+            }
             return SRStatusCode.Ok;
         }
 
@@ -568,10 +599,17 @@ namespace spikewall.Object
 
             var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET ranking_league = '{0}', group_id = '{1}' WHERE id= '{2}'",  playerState.rankingLeague, currentEndlessLeague.groupId, uid);
             var updatePlayerStateCommand = new MySqlCommand(updatePlayerStateSql, conn);
-            updatePlayerStateCommand.ExecuteNonQuery();
+            int rowsAffected = updatePlayerStateCommand.ExecuteNonQuery();
+
+            if (rowsAffected == 0)
+            {
+                // Failed to find row with this user ID
+                return SRStatusCode.MissingPlayer;
+            }
 
             conn.Close();
 
+            SaveEndlessLeagueData(conn, uid, ref currentEndlessLeague);
             return SRStatusCode.Ok;
         }
         public static SRStatusCode CalculateQuickRunnersLeague(MySqlConnection conn, string uid)
@@ -634,8 +672,15 @@ namespace spikewall.Object
 
             var updatePlayerStateSql = Db.GetCommand(@"UPDATE `sw_players` SET quick_ranking_league = '{0}', quick_ranking_league_group = {1}' WHERE id= '{2}'", currentQuickLeague.leagueId, currentQuickLeague.groupId, uid);
             var updatePlayerStateCommand = new MySqlCommand(updatePlayerStateSql, conn);
-            updatePlayerStateCommand.ExecuteNonQuery();
+            int rowsAffected = updatePlayerStateCommand.ExecuteNonQuery();
 
+            if (rowsAffected == 0)
+            {
+                // Failed to find row with this user ID
+                return SRStatusCode.MissingPlayer;
+            }
+
+            SaveQuickLeagueData(conn, uid, ref currentQuickLeague);
             return SRStatusCode.Ok;
         }
 
