@@ -264,9 +264,9 @@ namespace spikewall.Controllers
         }
 
         [HttpPost]
-        [Route("calculateAndResetLeague")]
+        [Route("calculateAndResetLeagueData")]
         [Produces("text/json")]
-        public JsonResult CalculateAndResetLeague([FromForm] string param, [FromForm] string secure, [FromForm] string key = "")
+        public JsonResult CalculateAndResetLeagueData([FromForm] string param, [FromForm] string secure, [FromForm] string key = "")
         {
             var iv = (string)Config.Get("encryption_iv");
 
@@ -277,6 +277,33 @@ namespace spikewall.Controllers
             if (clientReq.error != SRStatusCode.Ok)
             {
                 return new JsonResult(EncryptedResponse.Generate(iv, clientReq.error));
+            }
+
+            PlayerState playerState = new();
+            var populateStatus = playerState.Populate(conn, clientReq.userId);
+            if (populateStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, populateStatus));
+            }
+
+            LeaderboardEntriesRequest leaderboardEntriesRequest = new();
+
+            var getCalculateEndlessRunnersLeagueStatus = LeagueData.CalculateEndlessRunnersLeague(conn, clientReq.userId);
+            if (getCalculateEndlessRunnersLeagueStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, getCalculateEndlessRunnersLeagueStatus));
+            }
+
+            var getCalculateQuickRunnersLeagueStatus = LeagueData.CalculateQuickRunnersLeague(conn, clientReq.userId);
+            if (getCalculateQuickRunnersLeagueStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, getCalculateQuickRunnersLeagueStatus));
+            }
+
+            var getClearScoresStatus = LeagueData.ClearLeagueScoresData(conn);
+            if (getClearScoresStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, getClearScoresStatus));
             }
 
             // FIXME: Stub
