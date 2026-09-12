@@ -7,7 +7,6 @@ namespace spikewall.Response
     /// </summary>
     public class MessageListResponse : BaseResponse
     {
-        // FIXME: Messages shouldn't actually be strings, set up "Message" object
         public Message[]? messageList { get; set; }
         public long? totalMessage { get; set; }
         public string[]? operatorMessageList { get; set; }

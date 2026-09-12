@@ -15,8 +15,6 @@ namespace spikewall.Response
         public long? startIndex { get; set; }
         public long? mode { get; set; }
         public long? totalEntries { get; set; }
-
-        // FIXME: This is an array but shouldn't actually be strings, set up "LeaderboardEntry" object
         public LeaderboardEntry[]? entriesList { get; set; }
     }
 }
