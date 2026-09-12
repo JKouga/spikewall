@@ -173,10 +173,10 @@ namespace spikewall.Object
             return SRStatusCode.Ok;
         }
 
-        public static SRStatusCode GetStartAndEndTimesForEndlessLeague(MySqlConnection conn, long leagueId, long groupId, out long startTime, out long resetTime)
+        public static SRStatusCode GetStartAndEndTimesForEndlessLeague(MySqlConnection conn, long leagueId, long groupId, out long endlessStartTime, out long endlessResetTime)
         {
-            startTime = 0;
-            resetTime = 0;
+            endlessStartTime = 0;
+            endlessResetTime = 0;
 
             var endlessLeagueTimesSql = Db.GetCommand(@"SELECT start_time, end_time FROM `sw_endlessleaguedata WHERE league_id = '{0}' AND group_id = '{1}'", leagueId, groupId);
             var endlessLeagueTimesCommand = new MySqlCommand(endlessLeagueTimesSql, conn);
@@ -184,8 +184,25 @@ namespace spikewall.Object
 
             if (endlessLeagueTimesReader.HasRows)
             {
-                startTime = Convert.ToInt64("start_time");
-                resetTime = Convert.ToInt64("end_time");
+                endlessStartTime = Convert.ToInt64("start_time");
+                endlessResetTime = Convert.ToInt64("end_time");
+            }
+            conn.Close();
+            return SRStatusCode.Ok;
+        }
+        public static SRStatusCode GetStartAndEndTimesForQuickLeague(MySqlConnection conn, long leagueId, long groupId, out long quickStartTime, out long quickResetTime)
+        {
+            quickStartTime = 0;
+            quickResetTime = 0;
+
+            var quickLeagueTimesSql = Db.GetCommand(@"SELECT start_time, end_time FROM `sw_quickleaguedata WHERE league_id = '{0}' AND group_id = '{1}'", leagueId, groupId);
+            var quickLeagueTimesCommand = new MySqlCommand(quickLeagueTimesSql, conn);
+            var quickLeagueTimesReader = quickLeagueTimesCommand.ExecuteReader();
+
+            if (quickLeagueTimesReader.HasRows)
+            {
+                quickStartTime = Convert.ToInt64("start_time");
+                quickResetTime = Convert.ToInt64("end_time");
             }
             conn.Close();
             return SRStatusCode.Ok;

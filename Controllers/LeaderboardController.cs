@@ -97,10 +97,16 @@ namespace spikewall.Controllers
                 rankingLeagueGroup = playerState.quickRankingLeagueGroup;
             }
 
-            var startResetStatus = LeagueData.GetStartAndEndTimesForEndlessLeague(conn, (long)rankingLeague, (long)rankingLeagueGroup, out long startTime, out long resetTime);
-            if (startResetStatus != SRStatusCode.Ok)
+            var endlessStartResetStatus = LeagueData.GetStartAndEndTimesForEndlessLeague(conn, (long)rankingLeague, (long)rankingLeagueGroup, out long endlessStartTime, out long endlessResetTime);
+            if (endlessStartResetStatus != SRStatusCode.Ok)
             {
-                return new JsonResult(EncryptedResponse.Generate(iv, startResetStatus));
+                return new JsonResult(EncryptedResponse.Generate(iv, endlessStartResetStatus));
+            }
+
+            var quickStartResetStatus = LeagueData.GetStartAndEndTimesForQuickLeague(conn, (long)rankingLeague, (long)rankingLeagueGroup, out long quickStartTime, out long quickResetTime);
+            if (endlessStartResetStatus != SRStatusCode.Ok)
+            {
+                return new JsonResult(EncryptedResponse.Generate(iv, endlessStartResetStatus));
             }
 
             if (leaderboardEntriesRequest.Type == 4 || leaderboardEntriesRequest.Type == 5)
@@ -116,8 +122,8 @@ namespace spikewall.Controllers
                     }
 
                     weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
-                    weeklyLeaderboardEntriesResponse.startTime = startTime;
-                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startTime = quickStartTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = quickResetTime;
                     weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
                     weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
                     weeklyLeaderboardEntriesResponse.totalEntries = quickEntryCount;
@@ -135,17 +141,17 @@ namespace spikewall.Controllers
                     }
 
                     weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
-                    weeklyLeaderboardEntriesResponse.startTime = startTime;
-                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startTime = quickStartTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = quickResetTime;
                     weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
                     weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
                     weeklyLeaderboardEntriesResponse.totalEntries = endlessEntryCount;
                     weeklyLeaderboardEntriesResponse.entriesList = endlessLeaderboardEntries;
                 }
             }
-            else if (leaderboardEntriesRequest.Type == 6 || leaderboardEntriesRequest.Type == 7 || DateTimeOffset.Now.ToUnixTimeSeconds() < resetTime && DateTimeOffset.Now.ToUnixTimeSeconds() >= startTime)
+            else if (leaderboardEntriesRequest.Type == 6 || leaderboardEntriesRequest.Type == 7)
             {
-                if (leaderboardEntriesRequest.Mode == 1)
+                if (leaderboardEntriesRequest.Mode == 1 && (DateTimeOffset.Now.ToUnixTimeSeconds() < quickResetTime && DateTimeOffset.Now.ToUnixTimeSeconds() >= quickStartTime))
                 {
                     var quickLeaderboardStatus = LeagueData.GetQuickHighScores(conn, clientReq.userId, out LeaderboardEntry playerEntry, out LeaderboardEntry[] quickLeaderboard, out long quickLeaderboardPlayers);
                     if (quickLeaderboardStatus != SRStatusCode.Ok)
@@ -154,14 +160,14 @@ namespace spikewall.Controllers
                     }
 
                     weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
-                    weeklyLeaderboardEntriesResponse.startTime = startTime;
-                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startTime = quickStartTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = quickResetTime;
                     weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
                     weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
                     weeklyLeaderboardEntriesResponse.totalEntries = quickLeaderboardPlayers;
                     weeklyLeaderboardEntriesResponse.entriesList = quickLeaderboard;
                 }
-                else
+                else if (DateTimeOffset.Now.ToUnixTimeSeconds() < endlessResetTime && DateTimeOffset.Now.ToUnixTimeSeconds() >= endlessStartTime)
                 {
                     var endlessLeaderboardStatus = LeagueData.GetEndlessHighScores(conn, clientReq.userId, out LeaderboardEntry playerEntry, out LeaderboardEntry[] endlessLeaderboard, out long endlessLeaderboardPlayers);
                     if (endlessLeaderboardStatus != SRStatusCode.Ok)
@@ -170,8 +176,8 @@ namespace spikewall.Controllers
                     }
 
                     weeklyLeaderboardEntriesResponse.playerEntry = playerEntry;
-                    weeklyLeaderboardEntriesResponse.startTime = startTime;
-                    weeklyLeaderboardEntriesResponse.resetTime = resetTime;
+                    weeklyLeaderboardEntriesResponse.startTime = endlessStartTime;
+                    weeklyLeaderboardEntriesResponse.resetTime = endlessResetTime;
                     weeklyLeaderboardEntriesResponse.startIndex = leaderboardEntriesRequest.First;
                     weeklyLeaderboardEntriesResponse.mode = leaderboardEntriesRequest.Mode;
                     weeklyLeaderboardEntriesResponse.totalEntries = endlessLeaderboardPlayers;
