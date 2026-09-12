@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Microsoft.AspNetCore.Mvc;
+using MySqlConnector;
 using spikewall.Response;
 using System.Security.Cryptography;
 using static spikewall.Object.Character;
@@ -569,6 +570,48 @@ namespace spikewall.Object
                     if (playerState.rankingLeagueGroup <= endlessLeague.numUp)
                     {
                         endlessLeague.leagueId += 1;
+
+                        switch (endlessLeague.leagueId)
+                        {
+                            case 3:
+                            case 6:
+                            case 9:
+                            case 12:
+                            case 15:
+                            case 18:
+                            case 19:
+                            case 20:
+                                var populateChaoStateStatus = Chao.PopulateChaoState(conn, uid, out Chao[] chaoState);
+                                Chao chao = new();
+                                chao.chaoID = Convert.ToString(Chao.ChaoID.Shahra);
+                                var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
+                                if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
+                                {
+                                    var chaoPrize = ChaoSpinPrize.ChaoToChaoSpinPrize(chao);
+                                }
+                                else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
+                                {
+                                    var itemPrize = new Item((long)Item.ItemID.SpecialEgg, 1);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (endlessLeague.leagueId == 20)
+                    {
+                        var populateChaoStateStatus = Chao.PopulateChaoState(conn, uid, out Chao[] chaoState);
+                        Chao chao = new();
+                        chao.chaoID = Convert.ToString(Chao.ChaoID.Shahra);
+                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
+                        if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
+                        {
+                            var chaoPrize = ChaoSpinPrize.ChaoToChaoSpinPrize(chao);
+                        }
+                        else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
+                        {
+                            var itemPrize = new Item((long)Item.ItemID.SpecialEgg, 1);
+                        }
                     }
                     else if (endlessLeague.leagueId >= 9 && playerState.rankingLeagueGroup > (endlessLeague.numGroupMember - endlessLeague.numDown))
                     {
@@ -642,6 +685,47 @@ namespace spikewall.Object
                     if (playerState.quickRankingLeagueGroup <= quickLeague.numUp)
                     {
                         quickLeague.leagueId += 1;
+                        switch (quickLeague.leagueId)
+                        {
+                            case 3:
+                            case 6:
+                            case 9:
+                            case 12:
+                            case 15:
+                            case 18:
+                            case 19:
+                            case 20:
+                                var populateChaoState = Chao.PopulateChaoState(conn, uid, out Chao[] chaoState);
+                                Chao chao = new();
+                                chao.chaoID = Convert.ToString(Chao.ChaoID.DarkQueen);
+                                var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
+                                if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
+                                {
+                                    var chaoPrize = ChaoSpinPrize.ChaoToChaoSpinPrize(chao);
+                                }
+                                else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
+                                {
+                                    var itemPrize = new Item((long)Item.ItemID.SpecialEgg, 1);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    else if (quickLeague.leagueId == 20)
+                    {
+                        var populateChaoState = Chao.PopulateChaoState(conn, uid, out Chao[] chaoState);
+                        Chao chao = new();
+                        chao.chaoID = Convert.ToString(Chao.ChaoID.DarkQueen);
+                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
+                        if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
+                        {
+                            var chaoPrize = ChaoSpinPrize.ChaoToChaoSpinPrize(chao);
+                        }
+                        else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
+                        {
+                            var itemPrize = new Item((long)Item.ItemID.SpecialEgg, 1);
+                        }
                     }
                     else if (quickLeague.leagueId >= 9 && playerState.quickRankingLeagueGroup > (quickLeague.numGroupMember - quickLeague.numDown))
                     {

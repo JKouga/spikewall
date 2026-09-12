@@ -318,74 +318,12 @@ namespace spikewall.Controllers
                 LeagueData.GenerateEndlessLeagueData(conn, clientReq.userId, out LeagueData currentEndlessLeague);
                 leagueDataResponse.mode = leaderboardRequest.Mode;
                 leagueDataResponse.leagueData = currentEndlessLeague;
-
-                switch (currentEndlessLeague.leagueId)
-                {
-                    case 3:
-                    case 6:
-                    case 9:
-                    case 12:
-                    case 15:
-                    case 18:
-                    case 19:
-                    case 20:
-                        var populateChaoState = Chao.PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
-                        if (populateChaoState != SRStatusCode.Ok)
-                        {
-                            return new JsonResult(EncryptedResponse.Generate(iv, populateChaoState));
-                        }
-                        Chao chao = new();
-                        chao.chaoID = Convert.ToString(Chao.ChaoID.Shahra);
-                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
-                        if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
-                        {
-                            var chaoPrize = ChaoSpinPrize.ChaoToChaoSpinPrize(chao);
-                        }
-                        else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
-                        {
-                            var itemPrize = new Item((long)Item.ItemID.SpecialEgg, 1);
-                        }
-                        break;
-                    default:
-                        break;
-                }
             }
             else
             {
                 LeagueData.GenerateQuickLeagueData(conn, clientReq.userId, out LeagueData currentQuickLeague);
                 leagueDataResponse.mode = leaderboardRequest.Mode;
                 leagueDataResponse.leagueData = currentQuickLeague;
-
-                switch (currentQuickLeague.leagueId)
-                {
-                    case 3:
-                    case 6:
-                    case 9:
-                    case 12:
-                    case 15:
-                    case 18:
-                    case 19:
-                    case 20:
-                        var populateChaoState = Chao.PopulateChaoState(conn, clientReq.userId, out Chao[] chaoState);
-                        if (populateChaoState != SRStatusCode.Ok)
-                        {
-                            return new JsonResult(EncryptedResponse.Generate(iv, populateChaoState));
-                        }
-                        Chao chao = new();
-                        chao.chaoID = Convert.ToString(Chao.ChaoID.DarkQueen);
-                        var getChaoIndex = Chao.FindChaoInChaoState(Convert.ToInt32(chao.chaoID), chaoState);
-                        if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.NotOwned || chaoState[getChaoIndex].level < 10)
-                        {
-                            var chaoPrize = ChaoSpinPrize.ChaoToChaoSpinPrize(chao);
-                        }
-                        else if (chaoState[getChaoIndex].status == (sbyte)Chao.Status.MaxLevel)
-                        {
-                            var itemPrize = new Item((long)Item.ItemID.SpecialEgg, 1);
-                        }
-                        break;
-                    default:
-                        break;
-                }
             }
             return new JsonResult(EncryptedResponse.Generate(iv, leagueDataResponse));
         }
